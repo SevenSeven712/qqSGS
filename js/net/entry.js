@@ -73,6 +73,12 @@ window.netStartGameClick = async function () {
 };
 
 window.netLeaveClick = async function () {
+  if (netIsHost()) {
+    const tip = netRoom.started
+      ? '你是房主，离开将解散整个房间，所有玩家都会被移出并结束对局。\n\n确定要离开吗？'
+      : '你是房主，离开将解散整个房间，其他玩家都会被移出。\n\n确定要离开吗？';
+    if (!confirm(tip)) return;
+  }
   await netLeaveRoom();
   switchView('mainMenu');
 };
@@ -86,4 +92,11 @@ document.addEventListener('DOMContentLoaded', function () {
   if (b3) b3.onclick = window.netStartGameClick;
   const b4 = document.getElementById('btnNetLeave');
   if (b4) b4.onclick = window.netLeaveClick;
+});
+
+document.addEventListener('click', function (e) {
+  const btn = e.target && e.target.closest ? e.target.closest('#netModeGrid .net-mode-btn') : null;
+  if (!btn) return;
+  if (btn.disabled) return;
+  if (typeof netSetMode === 'function') netSetMode(btn.dataset.mode);
 });

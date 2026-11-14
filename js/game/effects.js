@@ -52,6 +52,9 @@ function showBombOverlay(targetIdx, callback) {
     }
 
 function showBombResult(judgeSuit, isExplode) {
+      if (typeof netPushFx === 'function' && !window.__netReplaying) {
+        netPushFx('bombResult', { judgeSuit: judgeSuit, isExplode: !!isExplode });
+      }
       const overlay = document.getElementById('bombOverlay');
       if (!overlay) return;
       const suitColor = (judgeSuit === '♠' || judgeSuit === '♣') ? '#ff4444' : '#44ccff';
@@ -89,6 +92,9 @@ function showLockJudge(targetIdx, isTargetLocal) {
             <div class="bomb-text" style="color:${isRed?'#ff6666':'#88ccff'};">${isRed?'锁定成功！':svgIcon('check')+' 锁定失败'}</div>
           `;
         addLog(`  判定结果：${judgeSuit} ${isRed?'红色':'黑色'}`);
+        if (typeof netPushFx === 'function' && !window.__netReplaying) {
+          netPushFx('lockResult', { targetIdx: targetIdx, judgeSuit: judgeSuit, isRed: isRed });
+        }
         if (isRed) {
           player.locked = true;
           player.hand.push(...drawCards(2));

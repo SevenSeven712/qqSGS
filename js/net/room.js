@@ -2,6 +2,8 @@
  * room.js — 房间：创建/加入/离开、Presence、广播收发
  * ============================================================ */
 
+const NET_MODE_VALID = ['duel', 'team', 'chaos', 'lord'];
+
 const netRoom = {
   role: null,
   code: null,
@@ -14,6 +16,7 @@ const netRoom = {
   started: false,
   myName: '',
   presenceList: [],
+  mode: 'chaos',
 };
 
 function netIsRemoteSeat(seat) {
@@ -85,6 +88,7 @@ async function netJoinRoom(code, role) {
   ch.on('broadcast', { event: NET_MSG.CHAT }, ({ payload }) => netOnChat(payload));
   ch.on('broadcast', { event: NET_MSG.START }, ({ payload }) => netOnStart(payload));
   ch.on('broadcast', { event: NET_MSG.BYE }, ({ payload }) => netOnBye(payload));
+  ch.on('broadcast', { event: NET_MSG.ROOM_MODE }, ({ payload }) => netOnRoomMode(payload));
 
   await netSubscribeChannel(ch);
   netRoom.channel = ch;
@@ -121,10 +125,25 @@ async function netGuestJoinRoom(code) {
   switchView('netRoomView');
 }
 
-async function netLeaveRoom() {
+async function netLeaveRoom(opts) {
+  const o = opts || {};
+  const wasHost = netRoom.role === 'host';
   try {
     if (netRoom.channel) {
-      await netSend(NET_MSG.BYE, { name: netRoom.myName });
+      if (!o.silent) {
+        if (wasHost) {
+          await netSend(NET_MSG.BYE, {
+            name: netRoom.myName,
+            reason: '房主已解散房间',
+            closeRoom: true,
+          });
+        } else {
+          await netSend(NET_MSG.BYE, {
+            name: netRoom.myName,
+            reason: o.reason || '对方已离开',
+          });
+        }
+      }
       await netRoom.channel.untrack();
       await netRoom.channel.unsubscribe();
     }
@@ -151,12 +170,13 @@ function netHandlePresence(st) {
   netRoom.presenceList = list;
   netRenderRoomUI();
 
-  if (netRoom.role === 'guest' && netRoom.started) {
+  if (netRoom.role === 'guest') {
     const hostIn = list.some(x => x.role === 'host');
-    if (!hostIn) {
-      showToast('联机', '房主已离开，对局结束', 'error');
-      netLeaveRoom();
-      switchView('mainMenu');
+    if (hostIn) {
+      netRoom._sawHost = true;
+    } else if (netRoom._sawHost) {
+      // 曾见过房主，现在不见了 → 房间已解散（房间页 / 对局中都生效）
+      netHandleRoomClosed(netRoom.started ? '房主已离开，对局结束' : '房主已离开，房间已解散');
     }
   }
 }
@@ -191,7 +211,7 @@ async function netOnHello(payload) {
       g.channel = pc;
     }
   }
-  await netSend(NET_MSG.WELCOME, { seat: g.seat, code: netRoom.code, hostName: netRoom.myName }, g.clientId);
+  await netSend(NET_MSG.WELCOME, { seat: g.seat, code: netRoom.code, hostName: netRoom.myName, mode: netRoom.mode || 'chaos' }, g.clientId);
   netRenderRoomUI();
 }
 
@@ -201,6 +221,7 @@ async function netOnWelcome(payload) {
   if (netRoom.role !== 'guest') return;
   netRoom.seat = payload.seat;
   state.localIndices = [payload.seat];
+  if (payload.mode && NET_MODE_VALID.indexOf(payload.mode) >= 0) netRoom.mode = payload.mode;
   if (netRoom.channel) {
     await netRoom.channel.track({ name: netRoom.myName, seat: netRoom.seat, role: 'guest' });
   }
@@ -218,15 +239,52 @@ function netOnStart(payload) {
   if (!payload) return;
   if (netRoom.role !== 'guest') return;
   netRoom.started = true;
+  if (payload.mode && NET_MODE_VALID.indexOf(payload.mode) >= 0) netRoom.mode = payload.mode;
   const title = document.getElementById('gameModeTitle');
-  if (title) title.textContent = '联机对战';
+  if (title) title.textContent = payload.modeLabel || '联机对战';
   switchView('gameView');
+}
+
+let _netClosedHandled = false;
+async function netHandleRoomClosed(reason) {
+  if (!netRoom.code) return;
+  if (_netClosedHandled) return;
+  _netClosedHandled = true;
+  try {
+    showToast('联机', reason || '房间已解散', 'error');
+    await netLeaveRoom({ silent: true });
+    if (typeof resetGame === 'function') resetGame();
+    switchView('mainMenu');
+  } finally {
+    setTimeout(() => { _netClosedHandled = false; }, 800);
+  }
+}
+
+async function netSetMode(mode) {
+  if (netRoom.role !== 'host') return;
+  if (netRoom.started) return;
+  if (NET_MODE_VALID.indexOf(mode) < 0) return;
+  netRoom.mode = mode;
+  netRenderRoomUI();
+  await netSend(NET_MSG.ROOM_MODE, { mode: mode });
+}
+
+function netOnRoomMode(payload) {
+  if (!payload || !payload.mode) return;
+  if (payload._from === netRoom.clientId) return;
+  if (NET_MODE_VALID.indexOf(payload.mode) < 0) return;
+  netRoom.mode = payload.mode;
+  netRenderRoomUI();
 }
 
 function netOnBye(payload) {
   if (!payload) return;
   if (payload._target && payload._target !== netRoom.clientId) return;
   if (payload._from === netRoom.clientId) return;
+  if (payload.closeRoom) {
+    netHandleRoomClosed(payload.reason || '房主已解散房间');
+    return;
+  }
   showToast('联机', payload.reason || '对方已离开', 'info');
 }
 
@@ -271,8 +329,39 @@ function netRenderRoomUI() {
     }
   }
 
+  const modeGrid = document.getElementById('netModeGrid');
+  const modeHint = document.getElementById('netModeHint');
   const startBtn = document.getElementById('btnNetStart');
   const waitHint = document.getElementById('netWaitHint');
-  if (startBtn) startBtn.style.display = netRoom.role === 'host' ? 'inline-flex' : 'none';
+  const curMode = netRoom.mode || 'chaos';
+  const memberCount = (netRoom.presenceList || []).length;
+  let canStart = false;
+  let hint = '';
+
+  if (modeGrid) {
+    modeGrid.querySelectorAll('.net-mode-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === curMode);
+      btn.disabled = (netRoom.role !== 'host') || netRoom.started;
+    });
+    const activeBtn = modeGrid.querySelector('.net-mode-btn[data-mode="' + curMode + '"]');
+    if (activeBtn) {
+      const min = parseInt(activeBtn.dataset.min, 10) || 2;
+      const max = parseInt(activeBtn.dataset.max, 10) || 6;
+      if (memberCount < min) {
+        hint = '还需 ' + (min - memberCount) + ' 人（当前 ' + memberCount + '/' + min + '）';
+      } else if (memberCount > max) {
+        hint = '人数超出（当前 ' + memberCount + '，最多 ' + max + '）';
+      } else {
+        hint = '当前 ' + memberCount + '/' + max + ' 人，可以开始';
+        canStart = true;
+      }
+    }
+  }
+  if (modeHint) modeHint.textContent = hint;
+
+  if (startBtn) {
+    startBtn.style.display = netRoom.role === 'host' ? 'inline-flex' : 'none';
+    startBtn.disabled = !canStart;
+  }
   if (waitHint) waitHint.style.display = netRoom.role === 'host' ? 'none' : 'inline';
 }

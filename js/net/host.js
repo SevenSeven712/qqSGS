@@ -3,6 +3,8 @@
  * ============================================================ */
 
 let _netSnapTimer = null;
+let _hostPendingTimer = null;
+let _hostPendingKey = '';
 
 function netHostScheduleSnapshot() {
   if (_netSnapTimer) return;
@@ -10,6 +12,37 @@ function netHostScheduleSnapshot() {
     _netSnapTimer = null;
     netHostBroadcastSnapshot();
   }, 40);
+}
+
+function netHostCheckPendingTimeout() {
+  const clear = () => {
+    if (_hostPendingTimer) { clearTimeout(_hostPendingTimer); _hostPendingTimer = null; }
+    _hostPendingKey = '';
+  };
+  if (!netIsHost() || !netRoom.started || !state.pending) { clear(); return; }
+  if (!netIsRemoteSeat(state.currentIdx)) { clear(); return; }
+  const pk = String(state.pending.type) + ':' + state.currentIdx + ':' + String(state.pending.from == null ? '' : state.pending.from);
+  if (pk === _hostPendingKey) return;
+  if (_hostPendingTimer) clearTimeout(_hostPendingTimer);
+  _hostPendingKey = pk;
+  const targetIdx = state.currentIdx;
+  const pendingType = state.pending.type;
+  _hostPendingTimer = setTimeout(() => {
+    _hostPendingTimer = null;
+    _hostPendingKey = '';
+    if (!netIsHost() || !state.pending) return;
+    if (state.currentIdx !== targetIdx) return;
+    if (!netIsRemoteSeat(targetIdx)) return;
+    try {
+      const p = state.players[targetIdx];
+      addLog('【联机】' + (p ? p.name : '玩家') + ' 响应超时（30 秒），自动按「不出」处理');
+      if (pendingType === 'respond_kill' || pendingType === CARD_TYPES.SOUTH || pendingType === CARD_TYPES.ARROWS) {
+        respondPending('no');
+      }
+    } catch (e) {
+      console.error('[net] pending timeout error', e);
+    }
+  }, 30000);
 }
 
 async function netHostBroadcastSnapshot() {
@@ -117,8 +150,16 @@ function netHostHandleIntent(seat, kind, data) {
 async function netHostStartGame() {
   if (netRoom.role !== 'host') return;
   const total = netRoom.guests.length + 1;
-  if (total < 2) { showToast('提示', '至少需要 2 名玩家', 'info'); return; }
-  if (total > 6) { showToast('提示', '最多 6 名玩家', 'info'); return; }
+  const mode = netRoom.mode || 'chaos';
+  const MODE_REQ = {
+    duel: { min: 2, max: 2, label: '1v1 单挑' },
+    team: { min: 4, max: 4, label: '2v2 合作' },
+    chaos: { min: 4, max: 4, label: '4人大乱斗' },
+    lord: { min: 6, max: 6, label: '主公模式' },
+  };
+  const req = MODE_REQ[mode] || MODE_REQ.chaos;
+  if (total < req.min) { showToast('提示', req.label + ' 需要至少 ' + req.min + ' 人（当前 ' + total + ' 人）', 'info'); return; }
+  if (total > req.max) { showToast('提示', req.label + ' 最多 ' + req.max + ' 人（当前 ' + total + ' 人）', 'info'); return; }
 
   netRoom.guests.sort((a, b) => a.seat - b.seat);
   const maxSeat = Math.max(0, ...netRoom.guests.map(g => g.seat));
@@ -157,8 +198,12 @@ async function netHostStartGame() {
     p.hp = g.hp;
   });
 
-  state.mode = 'chaos';
-  state.teams = [];
+  state.mode = mode;
+  if (mode === 'team') {
+    state.teams = state.players.map(function (_, i) { return i % 2; });
+  } else {
+    state.teams = [];
+  }
   state.deck = shuffle(createDeck());
   state.discard = [];
   state.players.forEach(p => { p.hand = drawCards(4); });
@@ -177,10 +222,10 @@ async function netHostStartGame() {
   netRoom.started = true;
 
   const title = document.getElementById('gameModeTitle');
-  if (title) title.textContent = '联机对战';
-  addLog('联机对局开始！');
+  if (title) title.textContent = req.label;
+  addLog('联机对局开始！模式：' + req.label);
 
-  await netSend(NET_MSG.START, { total: state.players.length });
+  await netSend(NET_MSG.START, { total: state.players.length, mode: mode, modeLabel: req.label });
   await netHostBroadcastSnapshot();
 
   switchView('gameView');

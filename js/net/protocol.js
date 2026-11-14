@@ -10,6 +10,7 @@ const NET_MSG = {
   PRIVATE_HAND: 'private_hand',
   CHAT: 'chat',
   START: 'start',
+  ROOM_MODE: 'room_mode',
   BYE: 'bye',
 };
 
@@ -74,6 +75,7 @@ function netBuildPublicSnapshot() {
     logs: (state.fullLogHistory || []).slice(-60).map(l => ({ time: l.time, msg: l.msg })),
     deckCount: state.deck ? state.deck.length : 0,
     discardCount: state.discard ? state.discard.length : 0,
+    fx: (typeof netTakeFx === 'function') ? netTakeFx() : [],
   };
 }
 
@@ -114,6 +116,10 @@ function netApplyPublicSnapshot(snap) {
     logBox.scrollTop = logBox.scrollHeight;
   }
   state.fullLogHistory = (snap.logs || []).map(l => ({ time: l.time, msg: l.msg }));
+
+  if (snap.fx && snap.fx.length && typeof netReplayFx === 'function') {
+    snap.fx.forEach(function (item) { netReplayFx(item.type, item.data); });
+  }
 
   if (typeof refreshUI === 'function') refreshUI();
 }

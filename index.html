@@ -643,6 +643,30 @@
         </div>
         <div class="net-code">房间码：<b id="netRoomCode">------</b></div>
         <div class="net-members" id="netRoomMembers"></div>
+        <div class="net-mode-section">
+          <div class="net-mode-title">
+            <span>对战模式（房主可切换）</span>
+            <span id="netModeHint" class="net-mode-hint"></span>
+          </div>
+          <div class="net-mode-grid" id="netModeGrid">
+            <button class="net-mode-btn" data-mode="duel" data-min="2" data-max="2">
+              <span class="nm-name">1v1 单挑</span>
+              <span class="nm-req">2 人</span>
+            </button>
+            <button class="net-mode-btn" data-mode="team" data-min="4" data-max="4">
+              <span class="nm-name">2v2 合作</span>
+              <span class="nm-req">4 人</span>
+            </button>
+            <button class="net-mode-btn" data-mode="chaos" data-min="4" data-max="4">
+              <span class="nm-name">4人大乱斗</span>
+              <span class="nm-req">4 人</span>
+            </button>
+            <button class="net-mode-btn" data-mode="lord" data-min="6" data-max="6">
+              <span class="nm-name">主公模式</span>
+              <span class="nm-req">6 人</span>
+            </button>
+          </div>
+        </div>
         <div class="net-actions">
           <button class="menu-btn" id="btnNetStart" style="display:none;"><span class="icn"></span>开始对局</button>
           <span id="netWaitHint" style="display:none;">等待房主开始...</span>
@@ -701,6 +725,7 @@
   <script src="./js/net/room.js"></script>
   <script src="./js/net/host.js"></script>
   <script src="./js/net/guest.js"></script>
+  <script src="./js/net/fx.js"></script>
   <script src="./js/net/entry.js"></script>
   <script src="./js/net/index.js"></script>
   <script src="./js/ui/announcement.js"></script>
