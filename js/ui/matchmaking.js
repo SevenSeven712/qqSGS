@@ -7,12 +7,19 @@ let matchTimer = null;
 let matchSecInterval = null;
 let matchOpponentInterval = null;
 
-function startMatch() {
-  if (typeof netStartMatching === 'function') {
-    netStartMatching(state.mode || 'chaos');
+async function startMatch() {
+  const mode = state.mode || 'chaos';
+  if (typeof netStartMatching === 'function' && typeof netGetAuthUser === 'function') {
+    const u = await netGetAuthUser();
+    if (u) {
+      netStartMatching(mode);
+      return;
+    }
+    showToast('提示', '未登录，已进入单机 AI 对战。登录后可匹配真人', 'info');
+    startMatchLocalAI(mode);
     return;
   }
-  startMatchLocalAI(state.mode || 'chaos');
+  startMatchLocalAI(mode);
 }
 
 function startMatchLocalAI(modeOverride, direct) {

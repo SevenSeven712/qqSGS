@@ -4,8 +4,8 @@
  * ============================================================ */
 
 const COMMUNITY_LOGIN_URL = '../社区/liuyanban/index.html?login=1';
-const COMMUNITY_REGISTER_URL = '../社区/liuyanban/index.html';
-const COMMUNITY_HOME_URL = '../社区/liuyanban/posts.html';
+const COMMUNITY_REGISTER_URL = 'https://liuyanban.de5.net/';
+const COMMUNITY_HOME_URL = 'https://liuyanban.de5.net/';
 
 let _authUser = null;
 let _authCheckedAt = 0;
@@ -16,8 +16,16 @@ async function netGetAuthUser(force) {
     const sb = getSupabase();
     const s = await sb.auth.getSession();
     if (!s || !s.data || !s.data.session) { _authUser = null; return null; }
-    const uid = s.data.session.user && s.data.session.user.id;
+    const user = s.data.session.user;
+    const uid = user && user.id;
     if (!uid) { _authUser = null; return null; }
+    // 排除匿名用户：Supabase 项目可能开启了匿名登录，
+    // 未登录时会自动创建 is_anonymous === true 的 session
+    if (user.is_anonymous === true) {
+      _authUser = null;
+      try { await sb.auth.signOut(); } catch (e) {}
+      return null;
+    }
     let profile = null;
     try {
       const r = await sb.from('users').select('id,nickname,avatar_url,coins,is_admin').eq('id', uid).single();
@@ -41,14 +49,20 @@ function netClearAuthCache() { _authUser = null; _authCheckedAt = 0; }
 function netShowAuthModal(onSuccess) {
   const html = `
     <div style="text-align:center;">
-      <h3 style="color:var(--gold);margin:0 0 8px 0;">需要登录</h3>
-      <p style="color:#b8a080;font-size:0.9em;line-height:1.7;margin:10px 0 20px 0;">
-        联机对战与房间功能需要 <b style="color:#ffd700;">Seven戚社区</b> 账号<br>
-        未注册的用户请先去社区注册
+      <h3 style="color:var(--gold);margin:0 0 6px 0;">登录 Seven戚社区</h3>
+      <p style="color:#b8a080;font-size:0.82em;line-height:1.6;margin:4px 0 16px 0;">
+        登录后即可联机对战、创建房间、查看个人资料
       </p>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn btn-attack" style="width:100%;" onclick="netGoLogin()"><span class="icn"></span>去登录</button>
-        <button class="btn" style="width:100%;" onclick="netGoRegister()"><span class="icn"></span>去注册</button>
+      <div style="text-align:left;">
+        <input id="netAuthEmail" type="email" placeholder="邮箱账号" autocomplete="username"
+          style="width:100%;padding:10px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1em;box-sizing:border-box;margin-bottom:8px;outline:none;">
+        <input id="netAuthPassword" type="password" placeholder="密码" autocomplete="current-password"
+          style="width:100%;padding:10px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1em;box-sizing:border-box;margin-bottom:4px;outline:none;">
+        <div id="netAuthErr" style="color:#ff6a5a;font-size:0.82em;min-height:18px;margin:4px 0 10px 0;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-attack" id="netAuthSubmit" style="width:100%;" onclick="netDoInlineLogin()"><span class="icn"></span>登录</button>
+        <button class="btn" style="width:100%;" onclick="netGoRegister()"><span class="icn"></span>没有账号？去注册</button>
         <button class="btn btn-close-icon" style="width:100%;" onclick="document.getElementById('playerInfoModal').style.display='none'"><span class="icn"></span>取消</button>
       </div>
     </div>`;
@@ -57,7 +71,46 @@ function netShowAuthModal(onSuccess) {
   box.innerHTML = html;
   document.getElementById('playerInfoModal').style.display = 'flex';
   window.__netAuthCallback = onSuccess || null;
+  setTimeout(function () {
+    const inp = document.getElementById('netAuthEmail');
+    if (inp) inp.focus();
+    const pw = document.getElementById('netAuthPassword');
+    if (pw) pw.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); netDoInlineLogin(); }
+    });
+  }, 60);
 }
+
+async function netDoInlineLogin() {
+  const emailEl = document.getElementById('netAuthEmail');
+  const pwEl = document.getElementById('netAuthPassword');
+  const errEl = document.getElementById('netAuthErr');
+  const btn = document.getElementById('netAuthSubmit');
+  const email = emailEl ? emailEl.value.trim() : '';
+  const pw = pwEl ? pwEl.value : '';
+  if (!email || !pw) { if (errEl) errEl.textContent = '请填写邮箱和密码'; return; }
+  if (errEl) errEl.textContent = '';
+  if (btn) { btn.disabled = true; btn.textContent = '登录中...'; }
+  try {
+    const sb = getSupabase();
+    const res = await sb.auth.signInWithPassword({ email: email, password: pw });
+    if (res.error) throw new Error(res.error.message || '邮箱或密码错误');
+    netClearAuthCache();
+    const u = await netGetAuthUser(true);
+    if (!u) throw new Error('登录成功但读取账号信息失败');
+    document.getElementById('playerInfoModal').style.display = 'none';
+    if (typeof showToast === 'function') showToast('登录成功', '欢迎回来，' + (u.nickname || '玩家'), 'success');
+    if (typeof netRenderAuthBar === 'function') netRenderAuthBar();
+    const cb = window.__netAuthCallback;
+    window.__netAuthCallback = null;
+    if (typeof cb === 'function') setTimeout(function () { cb(u); }, 200);
+  } catch (e) {
+    if (errEl) errEl.textContent = (e && e.message) ? e.message : '登录失败';
+    if (btn) { btn.disabled = false; btn.textContent = '登录'; }
+  }
+}
+
+window.netDoInlineLogin = netDoInlineLogin;
 
 window.netGoLogin = function () { window.location.href = COMMUNITY_LOGIN_URL; };
 window.netGoRegister = function () { window.location.href = COMMUNITY_REGISTER_URL; };

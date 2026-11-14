@@ -3,13 +3,7 @@
  * 依赖：全部模块以经典 <script> 顺序加载，共享同一全局作用域
  * ============================================================ */
 
-document.getElementById('btnStartGame').onclick = async () => {
-  if (typeof netRequireLogin === 'function') {
-    const ok = await netRequireLogin();
-    if (!ok) return;
-  }
-  switchView('modeSelect');
-};
+document.getElementById('btnStartGame').onclick = () => switchView('modeSelect');
 
 document.getElementById('btnHeroPage').onclick = () => { switchView('heroInfoView');
       renderHeroInfo(); };
@@ -19,7 +13,12 @@ document.getElementById('btnCardsInfo').onclick = () => { switchView('cardsInfoV
 
 document.getElementById('btnBackHero').onclick = () => switchView('mainMenu');
 
-document.getElementById('btnProfile').onclick = () => { switchView('profileView');
+document.getElementById('btnProfile').onclick = async () => {
+      if (typeof netRequireLogin === 'function') {
+        const ok = await netRequireLogin(function () { document.getElementById('btnProfile').click(); });
+        if (!ok) return;
+      }
+      switchView('profileView');
       document.getElementById('nicknameInput').value = localStorage.getItem('qQiNick') || '玩家';
       updateProfileRankDisplay(); };
 
@@ -41,7 +40,12 @@ document.getElementById('btnBackStats').onclick = () => switchView('profileView'
 document.getElementById('btnBackHistory').onclick = () => switchView('profileView');
 document.getElementById('btnBackMastery').onclick = () => switchView('profileView');
 
-document.getElementById('btnFriends').onclick = () => { loadFriends();
+document.getElementById('btnFriends').onclick = async () => {
+      if (typeof netRequireLogin === 'function') {
+        const ok = await netRequireLogin(function () { document.getElementById('btnFriends').click(); });
+        if (!ok) return;
+      }
+      loadFriends();
       switchView('friendsView'); };
 
 document.getElementById('btnCreateRoom').onclick = () => {
@@ -132,7 +136,11 @@ document.querySelectorAll('.offline-mode-btn').forEach(b => b.onclick = e => { d
 
 document.getElementById('btnStartMatch').onclick = () => startMatch();
 
-document.getElementById('btnOnlineMatch').onclick = () => {
+document.getElementById('btnOnlineMatch').onclick = async () => {
+  if (typeof netRequireLogin === 'function') {
+    const ok = await netRequireLogin();
+    if (!ok) return;
+  }
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">联机对战</h3>
     <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间让好友加入，或输入房间码加入</p>
