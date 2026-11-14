@@ -8,6 +8,15 @@ let matchSecInterval = null;
 let matchOpponentInterval = null;
 
 function startMatch() {
+  if (typeof netStartMatching === 'function') {
+    netStartMatching(state.mode || 'chaos');
+    return;
+  }
+  startMatchLocalAI(state.mode || 'chaos');
+}
+
+function startMatchLocalAI(modeOverride, direct) {
+  if (modeOverride) state.mode = modeOverride;
       const isDebug = localStorage.getItem('debugModeEnabled') === '1';
       const t = { lord: 6, team: 4, chaos: 4, duel: 2 } [state.mode] || 2;
       const oppCount = t - 1;
@@ -32,7 +41,7 @@ function startMatch() {
       if (state.mode === 'team') for (let i = 0; i < t; i++) state.teams[i] = (i % 2 === 0) ? 0 : 1;
       state.offlineMode = false;
 
-      if (isDebug) {
+      if (isDebug || direct) {
         startGeneralSelect(false);
         return;
       }

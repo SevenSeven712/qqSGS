@@ -22,7 +22,8 @@ const netRoom = {
 function netIsRemoteSeat(seat) {
   if (!netRoom.role) return false;
   if (netRoom.role === 'host') {
-    return (netRoom.guests || []).some(g => g.seat === seat);
+    // AI 座位不算"远端真人"，否则会被误当成等待 intent
+    return (netRoom.guests || []).some(g => g.seat === seat && !g.isAI);
   }
   if (netRoom.role === 'guest') {
     return seat === 0;
@@ -30,10 +31,11 @@ function netIsRemoteSeat(seat) {
   return false;
 }
 
-function netGenCode() {
+function netGenCode(len) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const n = Math.max(2, Math.min(8, parseInt(len, 10) || 4));
   let s = '';
-  for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < n; i++) s += chars[Math.floor(Math.random() * chars.length)];
   return s;
 }
 
@@ -68,6 +70,44 @@ async function netSend(event, payload, target) {
   }
 }
 
+function netProbeRoomExists(code) {
+  return new Promise(function (resolve) {
+    let settled = false;
+    let ch = null;
+    let timer = null;
+    const finish = function (ok) {
+      if (settled) return;
+      settled = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+      try { if (ch) { ch.untrack().catch(function () {}); ch.unsubscribe().catch(function () {}); } } catch (e) {}
+      resolve(ok);
+    };
+    try {
+      ch = getSupabase().channel('qqsg:' + code, { config: { presence: { key: 'probe_' + netGenId() } } });
+      ch.on('presence', { event: 'sync' }, function () {
+        const st = ch.presenceState();
+        let hostFound = false;
+        Object.keys(st || {}).forEach(function (k) {
+          (st[k] || []).forEach(function (item) {
+            if (item && item.role === 'host') hostFound = true;
+          });
+        });
+        if (hostFound) finish(true);
+      });
+      ch.subscribe(function (status) {
+        if (status === 'SUBSCRIBED') {
+          ch.track({ role: 'probe', ts: Date.now() }).catch(function () {});
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          finish(false);
+        }
+      });
+      timer = setTimeout(function () { finish(false); }, 1800);
+    } catch (e) {
+      finish(false);
+    }
+  });
+}
+
 async function netJoinRoom(code, role) {
   const sb = getSupabase();
   netRoom.code = code;
@@ -96,7 +136,11 @@ async function netJoinRoom(code, role) {
 }
 
 async function netHostCreateRoom() {
-  const code = netGenCode();
+  return netHostCreateRoomEx(4);
+}
+
+async function netHostCreateRoomEx(codeLen) {
+  const code = netGenCode(codeLen || 4);
   await netJoinRoom(code, 'host');
   netRoom.guests = [];
   netRoom.started = false;
@@ -107,8 +151,16 @@ async function netHostCreateRoom() {
 }
 
 async function netGuestJoinRoom(code) {
-  await netJoinRoom(code, 'guest');
-  const privateTopic = 'qqsg:' + code + ':priv-' + netGenId();
+  const normalized = String(code || '').trim().toUpperCase();
+  if (!/^[A-Z0-9]{4,6}$/.test(normalized)) {
+    throw new Error('房间码格式不正确（4 位字母数字）');
+  }
+  const ok = await netProbeRoomExists(normalized);
+  if (!ok) {
+    throw new Error('房间不存在或房主已离开');
+  }
+  await netJoinRoom(normalized, 'guest');
+  const privateTopic = 'qqsg:' + normalized + ':priv-' + netGenId();
   netRoom.privateTopic = privateTopic;
   const pc = getSupabase().channel(privateTopic);
   pc.on('broadcast', { event: NET_MSG.PRIVATE_HAND }, ({ payload }) => {
@@ -165,7 +217,10 @@ async function netLeaveRoom(opts) {
 function netHandlePresence(st) {
   const list = [];
   Object.keys(st || {}).forEach(key => {
-    (st[key] || []).forEach(item => list.push(Object.assign({ clientId: key }, item)));
+    (st[key] || []).forEach(item => {
+      if (item && item.role === 'probe') return; // 幽灵房探测者不显示
+      list.push(Object.assign({ clientId: key }, item));
+    });
   });
   netRoom.presenceList = list;
   netRenderRoomUI();
@@ -193,8 +248,9 @@ async function netOnHello(payload) {
     const used = new Set([0].concat(netRoom.guests.map(x => x.seat)));
     let seat = 1;
     while (used.has(seat)) seat++;
-    if (seat > 5) {
-      await netSend(NET_MSG.BYE, { reason: '房间已满' }, payload.clientId);
+    const modeSize = (typeof MODE_SIZE !== 'undefined' && MODE_SIZE[netRoom.mode]) ? MODE_SIZE[netRoom.mode] : 6;
+    if (seat >= modeSize) {
+      await netSend(NET_MSG.BYE, { reason: '房间已满（' + modeSize + ' 人模式）' }, payload.clientId);
       return;
     }
     g = {

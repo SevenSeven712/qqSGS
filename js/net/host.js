@@ -51,6 +51,7 @@ async function netHostBroadcastSnapshot() {
   await netSend(NET_MSG.PUBLIC_STATE, { snap });
   for (const g of netRoom.guests) {
     if (!g.channel) continue;
+    if (g.isAI) continue;
     const p = state.players[g.seat];
     const hand = p && p.hand ? p.hand.map(netSerializeCard) : [];
     try {
@@ -147,7 +148,35 @@ function netHostHandleIntent(seat, kind, data) {
   netHostScheduleSnapshot();
 }
 
-async function netHostStartGame() {
+async function netHostFillAIAndStart() {
+  if (!netIsHost()) return;
+  if (netRoom.started) return;
+  const mode = netRoom.mode || 'chaos';
+  const need = MODE_SIZE[mode] || 4;
+  const humans = (netRoom.guests || []).filter(g => !g.isAI).length + 1;
+  if (humans < need) {
+    const used = new Set([0].concat(netRoom.guests.map(g => g.seat)));
+    let filled = 0;
+    for (let s = 1; s < need && filled < (need - humans); s++) {
+      if (used.has(s)) continue;
+      netRoom.guests.push({
+        clientId: '__ai_' + s + '_' + netGenId(),
+        seat: s,
+        name: getRandomName(),
+        privateTopic: null,
+        channel: null,
+        isAI: true,
+      });
+      used.add(s);
+      filled++;
+    }
+    addLog('【联机】已补 ' + filled + ' 个 AI 补位到 ' + need + ' 人');
+  }
+  try { await netHostStartGame(true); }
+  catch (e) { console.error('[net] fill ai start failed', e); }
+}
+
+async function netHostStartGame(skipCheck) {
   if (netRoom.role !== 'host') return;
   const total = netRoom.guests.length + 1;
   const mode = netRoom.mode || 'chaos';
@@ -158,8 +187,10 @@ async function netHostStartGame() {
     lord: { min: 6, max: 6, label: '主公模式' },
   };
   const req = MODE_REQ[mode] || MODE_REQ.chaos;
-  if (total < req.min) { showToast('提示', req.label + ' 需要至少 ' + req.min + ' 人（当前 ' + total + ' 人）', 'info'); return; }
-  if (total > req.max) { showToast('提示', req.label + ' 最多 ' + req.max + ' 人（当前 ' + total + ' 人）', 'info'); return; }
+  if (!skipCheck) {
+    if (total < req.min) { showToast('提示', req.label + ' 需要至少 ' + req.min + ' 人（当前 ' + total + ' 人）', 'info'); return; }
+    if (total > req.max) { showToast('提示', req.label + ' 最多 ' + req.max + ' 人（当前 ' + total + ' 人）', 'info'); return; }
+  }
 
   netRoom.guests.sort((a, b) => a.seat - b.seat);
   const maxSeat = Math.max(0, ...netRoom.guests.map(g => g.seat));

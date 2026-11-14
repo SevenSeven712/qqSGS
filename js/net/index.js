@@ -17,7 +17,12 @@
 
   const _origScheduleAi = scheduleAi;
   scheduleAi = function () {
-    if (netIsOnline()) return;
+    if (netIsOnline()) {
+      const curIdx = state.currentIdx;
+      if (isLocal(curIdx)) return;
+      if (typeof netIsRemoteSeat === 'function' && netIsRemoteSeat(curIdx)) return;
+      // AI 座位（既非本地也非远端真人）→ 让 AI 执行
+    }
     return _origScheduleAi.apply(this, arguments);
   };
 
