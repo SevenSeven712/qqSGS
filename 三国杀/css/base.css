@@ -1,0 +1,134 @@
+/* ============================================================
+ * base.css — 基础层：CSS 变量、重置、页面底色与纹理、#app 容器
+ * ============================================================ */
+
+/* SVG 图标基类：尺寸跟随字号，颜色跟随 currentColor */
+.svg-i {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex: none;
+  pointer-events: none;
+}
+
+/* 花色在卡面上字号很小，略微放大并下移，与牌名对齐 */
+.svg-suit { width: 1.1em; height: 1.1em; vertical-align: -0.2em; }
+
+/* 武将头像位：SVG 徽记铺底，图片加载成功后覆盖，失败则自动移除 */
+.avatar-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+:root {
+  --bg: #0a0605;
+  --bg-dark: #050302;
+  --bg-gradient: linear-gradient(180deg, #0a0605 0%, #150a08 40%, #0a0605 100%);
+  --panel: #1a120e;
+  --panel-light: #2a1a10;
+  --gold: #c9a050;
+  --gold-light: #e8d4a8;
+  --gold-bright: #ffd700;
+  --gold-glow: rgba(201, 160, 80, 0.45);
+  --red: #b5302a;
+  --red-light: #d9555a;
+  --red-glow: rgba(181, 48, 42, 0.35);
+  --green: #5cb85c;
+  --blue: #4a90c8;
+  --border: #4a3a20;
+  --border-light: #6a4a30;
+  --text: #e8d5b0;
+  --text-muted: #a08860;
+  --card-bg: #f5f0e8;
+  --highlight: #ffcc00;
+  --ink: #1a1205;
+  --shadow-gold: 0 4px 20px rgba(201, 160, 80, 0.3);
+  --shadow-deep: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 18px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background:
+    radial-gradient(ellipse at 20% 85%, rgba(139, 69, 19, 0.22) 0%, transparent 45%),
+    radial-gradient(ellipse at 80% 90%, rgba(181, 48, 42, 0.12) 0%, transparent 40%),
+    var(--bg-gradient);
+  font-family: 'STSong', 'Songti SC', 'Noto Serif SC', 'KaiTi', 'SimSun', serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  user-select: none;
+  -webkit-user-select: none;
+  color: var(--text);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(201, 160, 80, 0.08) 1px, transparent 2px),
+    radial-gradient(circle at 78% 12%, rgba(201, 160, 80, 0.06) 1px, transparent 2px),
+    radial-gradient(circle at 28% 82%, rgba(201, 160, 80, 0.05) 1px, transparent 2px),
+    radial-gradient(circle at 72% 72%, rgba(201, 160, 80, 0.07) 1px, transparent 2px),
+    radial-gradient(circle at 50% 35%, rgba(201, 160, 80, 0.05) 1px, transparent 2px);
+  background-size: 110px 110px, 150px 150px, 130px 130px, 170px 170px, 95px 95px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, transparent 30%, rgba(0, 0, 0, 0.35) 100%),
+    radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app {
+  width: 100%;
+  max-width: 1180px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.view { display: none; flex-direction: column; align-items: center; padding: 16px 4px; width: 100%; }
+
+.view.active { display: flex; animation: viewEnter 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+
+.view.active h2 { animation: titleEnter 0.7s ease 0.1s both; }
+
+.view.active .menu-grid { animation: staggerIn 0.5s ease 0.2s both; }
+
+.view.active .menu-btn { animation: btnEnter 0.4s ease both; }
+
+.view.active .menu-btn:nth-child(1) { animation-delay: 0.25s; }
+
+.view.active .menu-btn:nth-child(2) { animation-delay: 0.35s; }
+
+.view.active .menu-btn:nth-child(3) { animation-delay: 0.45s; }
+
+.view.active .menu-btn:nth-child(4) { animation-delay: 0.55s; }
+
+.view.active .settings-section { animation: sectionEnter 0.5s ease both; }
+
+.view.active .settings-section:nth-child(1) { animation-delay: 0.15s; }
+
+.view.active .settings-section:nth-child(2) { animation-delay: 0.25s; }
+
+.view.active .settings-section:nth-child(3) { animation-delay: 0.35s; }
+
+.view.active .settings-section:nth-child(4) { animation-delay: 0.45s; }
+
+.view.active .settings-section:nth-child(5) { animation-delay: 0.55s; }
