@@ -1,0 +1,116 @@
+/* ============================================================
+ * net.css — 联机房间界面样式
+ * ============================================================ */
+
+#netRoomView {
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.net-card {
+  width: 100%;
+  max-width: 460px;
+  background: linear-gradient(160deg, #2a1a10 0%, #150a04 100%);
+  border: 1px solid var(--gold);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(212, 175, 55, 0.15);
+}
+
+.net-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.net-header h3 {
+  color: var(--gold);
+  margin: 0;
+  letter-spacing: 3px;
+  font-size: 1.1em;
+}
+
+.net-code {
+  color: #b8a080;
+  font-size: 0.9em;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.net-code b {
+  color: #ffd700;
+  font-size: 1.5em;
+  letter-spacing: 6px;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+}
+
+.net-members {
+  background: #1a1008;
+  border: 1px solid #4a3020;
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 120px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 14px;
+}
+
+.net-member {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px dashed #3a2a1a;
+  font-size: 0.95em;
+  color: #e8d5b0;
+}
+
+.net-member:last-child { border-bottom: none; }
+
+.net-member .tag {
+  font-size: 0.72em;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #3a2a1a;
+  color: #b8a080;
+  letter-spacing: 1px;
+}
+
+.net-member.is-host .tag {
+  background: linear-gradient(180deg, #c9a050, #8a6020);
+  color: #1a1205;
+  font-weight: bold;
+}
+
+.net-member .name {
+  color: #ffe9b5;
+  font-weight: bold;
+}
+
+.net-empty {
+  color: #6a5a40;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  font-size: 0.85em;
+}
+
+.net-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.net-actions .menu-btn {
+  width: 100%;
+}
+
+#netWaitHint {
+  color: #b8a080;
+  font-size: 0.85em;
+  text-align: center;
+  padding: 8px 0;
+}
