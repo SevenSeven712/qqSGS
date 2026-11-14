@@ -2,7 +2,11 @@
  * entry.js — 联机入口：创建/加入房间弹窗、开始按钮
  * ============================================================ */
 
-window.netOpenCreate = function () {
+window.netOpenCreate = async function () {
+  if (typeof netRequireLogin === 'function') {
+    const ok = await netRequireLogin(function () { netOpenCreate(); });
+    if (!ok) return;
+  }
   const nick = localStorage.getItem('qQiNick') || '玩家';
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">创建联机房间</h3>
@@ -31,7 +35,11 @@ window.netOpenRoomEntry = async function () {
   document.getElementById('playerInfoModal').style.display = 'flex';
 };
 
-window.netOpenJoin = function () {
+window.netOpenJoin = async function () {
+  if (typeof netRequireLogin === 'function') {
+    const ok = await netRequireLogin(function () { netOpenJoin(); });
+    if (!ok) return;
+  }
   const nick = localStorage.getItem('qQiNick') || '玩家';
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">加入联机房间</h3>

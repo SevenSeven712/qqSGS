@@ -227,6 +227,35 @@
 
 .main-btn:active { transform: translateY(-1px); }
 
+.main-auth-bar {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 8px;
+  margin: 8px auto 0;
+  padding: 6px 14px;
+  background: rgba(26, 16, 8, 0.7);
+  border: 1px solid rgba(201, 160, 80, 0.3);
+  border-radius: 999px;
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+.main-auth-bar .auth-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #6a5a40;
+  box-shadow: 0 0 6px rgba(106, 90, 64, 0.5);
+}
+.main-auth-bar.is-logged .auth-dot {
+  background: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.7);
+}
+.main-auth-bar.is-logged { color: #c9e8b0; border-color: rgba(76, 175, 80, 0.4); }
+.main-auth-bar .auth-link {
+  background: none; border: none; cursor: pointer;
+  color: #ffd700; font-family: inherit; font-size: 1em;
+  padding: 0 2px; text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.main-auth-bar .auth-link:hover { color: #fff5d0; }
+
 .sub-entries {
   position: relative; z-index: 2;
   display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;

@@ -3,7 +3,13 @@
  * 依赖：全部模块以经典 <script> 顺序加载，共享同一全局作用域
  * ============================================================ */
 
-document.getElementById('btnStartGame').onclick = () => switchView('modeSelect');
+document.getElementById('btnStartGame').onclick = async () => {
+  if (typeof netRequireLogin === 'function') {
+    const ok = await netRequireLogin();
+    if (!ok) return;
+  }
+  switchView('modeSelect');
+};
 
 document.getElementById('btnHeroPage').onclick = () => { switchView('heroInfoView');
       renderHeroInfo(); };

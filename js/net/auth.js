@@ -69,9 +69,31 @@ async function netRequireLogin(callback) {
   return false;
 }
 
+async function netRenderAuthBar() {
+  const bar = document.getElementById('mainAuthBar');
+  if (!bar) return;
+  const u = await netGetAuthUser(true);
+  const txt = document.getElementById('mainAuthText');
+  const btn = document.getElementById('mainAuthBtn');
+  bar.style.display = 'flex';
+  if (u) {
+    bar.classList.add('is-logged');
+    if (txt) txt.textContent = '已登录：' + (u.nickname || '玩家');
+    if (btn) { btn.textContent = '个人中心'; btn.onclick = function () { window.location.href = COMMUNITY_HOME_URL; }; }
+  } else {
+    bar.classList.remove('is-logged');
+    if (txt) txt.textContent = '未登录（联机需登录）';
+    if (btn) { btn.textContent = '去登录'; btn.onclick = function () { window.location.href = COMMUNITY_LOGIN_URL; }; }
+  }
+}
+
 // 页面加载时如有 OAuth 回调（社区登录后跳回），自动刷新一次 auth
 (function () {
+  const boot = function () {
+    netGetAuthUser(true).then(function () { netRenderAuthBar(); });
+    setTimeout(netRenderAuthBar, 1500);
+  };
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { netGetAuthUser(true); });
-  } else { netGetAuthUser(true); }
+    document.addEventListener('DOMContentLoaded', boot);
+  } else { boot(); }
 })();
