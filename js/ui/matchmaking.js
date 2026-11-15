@@ -24,6 +24,10 @@ async function startMatch() {
 
 function startMatchLocalAI(modeOverride, direct) {
   if (modeOverride) state.mode = modeOverride;
+  // 在单机模式开局前，确保读取到了当前用户头像
+  if (typeof netGetAuthUser === 'function' && !window._currentAvatarUrl) {
+    netGetAuthUser().catch(()=>{});
+  }
       const isDebug = localStorage.getItem('debugModeEnabled') === '1';
       const t = { lord: 6, team: 4, chaos: 4, duel: 2 } [state.mode] || 2;
       const oppCount = t - 1;
@@ -33,6 +37,7 @@ function startMatchLocalAI(modeOverride, direct) {
         return {
           id: i,
           name: isLocal ? (localStorage.getItem('qQiNick') || '玩家') : getRandomName(),
+          avatar: isLocal ? (window._currentAvatarUrl || '') : '',
           general: null,
           hp: 0,
           maxHp: 0,

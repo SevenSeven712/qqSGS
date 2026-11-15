@@ -40,6 +40,7 @@ async function netGetAuthUser(force) {
     }
     _authUser = profile;
     _authCheckedAt = Date.now();
+    window._currentAvatarUrl = (profile.avatar_url && /^https?:\/\//.test(profile.avatar_url)) ? profile.avatar_url : '';
     return profile;
   } catch (e) {
     _authUser = null;

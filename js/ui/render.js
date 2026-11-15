@@ -39,12 +39,13 @@ function renderPlayers() {
         const lockedStyle = p.locked ? 'border-color:#6a4a9a;box-shadow:0 0 15px rgba(106,74,154,0.28);' : '';
         const showHandCount = !state.offlineMode || i === state.currentIdx || p.hp <= 0;
         const av = (p.avatar && /^https?:\/\//.test(p.avatar)) ? p.avatar : '';
-        const avatarContent = av
-          ? '<img class="avatar-img" src="' + av.replace(/"/g, '%22') + '" alt="" onerror="this.remove()">'
-          : String(p.name || 'U').charAt(0).toUpperCase();
+        const initial = String(p.name || 'U').charAt(0).toUpperCase();
+        const bgStyle = av ? `background-image:url('${av.replace(/'/g, '%27')}');background-size:cover;background-position:center;` : '';
         return `<div class="player-card ${a} ${dc}" id="player-${i}" onclick="showPlayerPopup(${i})" ${lockedStyle?'style="'+lockedStyle+'"':''}>
             <div class="turn-badge">行动中</div>
-            <div class="player-avatar" style="background:${p.general?p.general.color:'#8a6f3e'};">${avatarContent}</div>
+            <div class="player-avatar" style="background-color:${p.general?p.general.color:'#8a6f3e'};${bgStyle}">
+              <span style="position:relative; z-index:1;${av ? 'opacity:0;' : ''}">${initial}</span>
+            </div>
             <div class="player-rank">${p.rank}</div>
             <div class="player-name" style="color:${tc};">${d?p.name+' (阵亡)':p.name}</div>
             <div class="hp-bar">${Array.from({length:p.maxHp},(_,j)=>`<span class="hp-dot${j>=p.hp?' lost':''}"></span>`).join('')}</div>
@@ -66,13 +67,13 @@ window.showPlayerPopup = function(idx) {
       
       const av = (p.avatar && /^https?:\/\//.test(p.avatar)) ? p.avatar : '';
       const initial = String(p.name || 'U').charAt(0).toUpperCase();
+      const bgStyle = av ? `background-image:url('${av.replace(/'/g, '%27')}');background-size:cover;background-position:center;` : '';
       
       document.getElementById('playerInfoContent').innerHTML = `
           <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
             <div style="position:relative;">
-              <div style="position:relative;overflow:hidden;width:80px;height:80px;border-radius:50%;background:${p.general?p.general.color:'#8a6f3e'};display:flex;align-items:center;justify-content:center;font-size:3em;color:#fff;border:3px solid ${rc};box-shadow:0 0 20px ${rc};">
-                ${initial}
-                ${av ? '<img class="avatar-img" src="' + av.replace(/"/g, '%22') + '" alt="" onerror="this.remove()">' : ''}
+              <div style="position:relative;overflow:hidden;width:80px;height:80px;border-radius:50%;background-color:${p.general?p.general.color:'#8a6f3e'};display:flex;align-items:center;justify-content:center;font-size:3em;color:#fff;border:3px solid ${rc};box-shadow:0 0 20px ${rc};${bgStyle}">
+                <span style="position:relative; z-index:1;${av ? 'opacity:0;' : ''}">${initial}</span>
               </div>
               <div style="position:absolute;top:-5px;right:-5px;background:${rc};color:#faf6ec;padding:2px 8px;border-radius:12px;font-size:0.75em;font-weight:bold;">
                 ${p.rank}
