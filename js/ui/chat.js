@@ -132,12 +132,16 @@ window.addChat = addChat;
 window.openChat = openChat;
 window.closeChat = closeChat;
 
-function aiTurnIntro(idx) { if (!state.players || !state.players[idx]) return; const p = state.players[idx]; if (
+function aiTurnIntro(idx) {
+      if (typeof netIsOnline === 'function' && netIsOnline()) return; // 联机模式禁止自动发言
+      if (!state.players || !state.players[idx]) return; const p = state.players[idx]; if (
         isLocal(idx)) return; const pType = getAiPersonality(p.name); if (Math.random() < 0.45) { const c = AI_PERSONALITY[
           pType].chatPrefix;
         addChat(p.name, c[Math.floor(Math.random() * c.length)]); } }
 
-function aiEventChat(evt, targetIdx, sourceIdx) { if (state.gameOver) return; const names = ['玩家', targetIdx !==
+function aiEventChat(evt, targetIdx, sourceIdx) {
+      if (typeof netIsOnline === 'function' && netIsOnline()) return; // 联机模式禁止自动发言
+      if (state.gameOver) return; const names = ['玩家', targetIdx !==
         undefined && state.players[targetIdx] ? state.players[targetIdx].name : '', sourceIdx !== undefined && state
         .players[sourceIdx] ? state.players[sourceIdx].name : ''
       ]; const talker = sourceIdx !== undefined && state.players[sourceIdx] ? sourceIdx : targetIdx; if (talker ===
@@ -147,7 +151,9 @@ function aiEventChat(evt, targetIdx, sourceIdx) { if (state.gameOver) return; co
       else if (evt === 'win') msgs = AI_PERSONALITY[pType].onWin; else if (evt === 'lose') msgs = AI_PERSONALITY[pType]
         .onLose; else return; if (Math.random() < 0.4) addChat(p.name, msgs[Math.floor(Math.random() * msgs.length)]); }
 
-function randomAiChat() { if (state.gameOver || state.phase !== 'play') return; if (Math.random() > 0.08) return;
+function randomAiChat() {
+      if (typeof netIsOnline === 'function' && netIsOnline()) return; // 联机模式禁止自动发言
+      if (state.gameOver || state.phase !== 'play') return; if (Math.random() > 0.08) return;
       const ais = []; for (let i = 0; i < state.players.length; i++) { if (!isLocal(i) && state.players[i].hp > 0) ais
           .push(i); } if (ais.length === 0) return; const idx = ais[Math.floor(Math.random() * ais.length)]; const p =
         state.players[idx]; const pType = getAiPersonality(p.name); const msgs = AI_PERSONALITY[pType].chatPrefix; if (

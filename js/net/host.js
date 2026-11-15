@@ -78,7 +78,9 @@ function netOnIntent(payload) {
 
 function netHostHandleIntent(seat, kind, data) {
   const p = state.players[seat];
-  if (!p || p.hp <= 0) return;
+  if (!p) return;
+  // 选将阶段可以无视 hp<=0 的拦截
+  if (kind !== NET_INTENT.SELECT_GENERAL && p.hp <= 0) return;
 
   try {
     switch (kind) {
