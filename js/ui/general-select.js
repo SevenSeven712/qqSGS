@@ -176,3 +176,83 @@ function showPlayerMoreInfo(playerIdx) {
         `;
       document.getElementById('playerInfoContent').innerHTML = content;
     }
+
+function startNetGeneralSelect() {
+  state.selectedCardIdx = null;
+  const grid = document.getElementById('generalGrid');
+  if (!grid) return;
+  
+  const confirmBtn = document.getElementById('btnConfirmGeneral');
+  if (confirmBtn) {
+    confirmBtn.style.display = 'inline-flex';
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = '请选择武将';
+    confirmBtn.onclick = () => {
+      const sel = grid.querySelector('.general-card.selected');
+      if (!sel) return;
+      const generalId = sel.dataset.id;
+      
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = '已确认，等待中...';
+      
+      if (netIsHost()) {
+        if (typeof netHostHandleSelectGeneral === 'function') netHostHandleSelectGeneral(0, generalId);
+      } else {
+        if (typeof netGuestSendIntent === 'function') netGuestSendIntent(NET_INTENT.SELECT_GENERAL, { generalId: generalId });
+      }
+    };
+  }
+
+  window.updateNetGrid = function () {
+    const isHost = netIsHost();
+    const mySeat = isHost ? 0 : netRoom.seat;
+    const me = state.players[mySeat];
+    
+    // 如果我已经选了武将，直接显示等待
+    if (me && me.general) {
+      if (!grid.querySelector('.general-card')) {
+        grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:1.2em;">你已选择【' + me.general.name + '】，等待其他玩家...</div>';
+        if (confirmBtn) confirmBtn.style.display = 'none';
+      }
+      return;
+    }
+
+    // 如果第一次渲染
+    if (!grid.querySelector('.general-card')) {
+      grid.innerHTML = GENERALS.map(g => {
+        const isTaken = state.takenGenerals.includes(g.id);
+        return `<div class="general-card ${isTaken ? 'taken' : ''}" data-id="${g.id}">
+          <div class="detail-btn" data-id="${g.id}">?</div>
+          <div class="general-img" style="background-image:url('${g.img}')"></div>
+          <div class="general-name">${g.name}</div>
+          <div class="general-skill">【${g.skill}】${g.desc}</div>
+        </div>`;
+      }).join('');
+      
+      grid.querySelectorAll('.general-card').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.classList.contains('detail-btn')) { showDetail(el.dataset.id); return; }
+          if (el.classList.contains('taken')) return;
+          grid.querySelectorAll('.general-card').forEach(c => c.classList.remove('selected'));
+          el.classList.add('selected');
+          if (confirmBtn) confirmBtn.disabled = false;
+        });
+      });
+      grid.querySelectorAll('.detail-btn').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); showDetail(b.dataset.id); }));
+    } else {
+      // 局部更新 taken 状态
+      grid.querySelectorAll('.general-card').forEach(el => {
+        const gid = el.dataset.id;
+        if (state.takenGenerals.includes(gid)) {
+          el.classList.add('taken');
+          if (el.classList.contains('selected')) {
+            el.classList.remove('selected');
+            if (confirmBtn) confirmBtn.disabled = true;
+          }
+        }
+      });
+    }
+  };
+
+  window.updateNetGrid();
+}

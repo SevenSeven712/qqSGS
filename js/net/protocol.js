@@ -22,6 +22,7 @@ const NET_INTENT = {
   CONFIRM_DISCARD: 'confirmDiscard',
   CONFIRM_NEXT_ROUND: 'confirmNextRound',
   USE_SKILL: 'useSkill',
+  SELECT_GENERAL: 'selectGeneral',
 };
 
 const NET_EQUIP_SLOTS = ['weapon', 'armor', 'plus1', 'minus1'];
@@ -77,6 +78,7 @@ function netBuildPublicSnapshot() {
     deckCount: state.deck ? state.deck.length : 0,
     discardCount: state.discard ? state.discard.length : 0,
     fx: (typeof netTakeFx === 'function') ? netTakeFx() : [],
+    takenGenerals: state.takenGenerals || [],
   };
 }
 
@@ -121,6 +123,14 @@ function netApplyPublicSnapshot(snap) {
 
   if (snap.fx && snap.fx.length && typeof netReplayFx === 'function') {
     snap.fx.forEach(function (item) { netReplayFx(item.type, item.data); });
+  }
+
+  if (snap.takenGenerals) {
+    state.takenGenerals = snap.takenGenerals;
+  }
+
+  if (state.phase === 'select_general' && typeof window.updateNetGrid === 'function') {
+    window.updateNetGrid();
   }
 
   if (typeof refreshUI === 'function') refreshUI();

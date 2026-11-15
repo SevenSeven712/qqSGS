@@ -315,7 +315,13 @@ function netOnStart(payload) {
   if (payload.mode && NET_MODE_VALID.indexOf(payload.mode) >= 0) netRoom.mode = payload.mode;
   const title = document.getElementById('gameModeTitle');
   if (title) title.textContent = payload.modeLabel || '联机对战';
-  switchView('gameView');
+  
+  if (payload.phase === 'select_general') {
+    switchView('generalSelectView');
+    startNetGeneralSelect();
+  } else {
+    switchView('gameView');
+  }
 }
 
 let _netClosedHandled = false;

@@ -127,6 +127,10 @@ function netHostHandleIntent(seat, kind, data) {
       case NET_INTENT.CONFIRM_NEXT_ROUND:
         confirmEnterNextRound();
         break;
+      case NET_INTENT.SELECT_GENERAL: {
+        netHostHandleSelectGeneral(seat, data.generalId);
+        break;
+      }
       case NET_INTENT.USE_SKILL: {
         const fn = data.skill;
         if (typeof window[fn] !== 'function') return;
@@ -148,9 +152,101 @@ function netHostHandleIntent(seat, kind, data) {
   netHostScheduleSnapshot();
 }
 
+async function netHostBeginGame() {
+  if (!netIsHost()) return;
+  const mode = netRoom.mode || 'chaos';
+  const MODE_REQ = {
+    duel: { min: 2, max: 2, label: '1v1 单挑' },
+    team: { min: 4, max: 4, label: '2v2 合作' },
+    chaos: { min: 4, max: 4, label: '4人大乱斗' },
+    lord: { min: 6, max: 6, label: '主公模式' },
+  };
+  const req = MODE_REQ[mode] || MODE_REQ.chaos;
+
+  state.mode = mode;
+  state.teams = mode === 'team' ? state.players.map((_, i) => i % 2) : [];
+  state.deck = shuffle(createDeck());
+  state.discard = [];
+  state.players.forEach(p => { p.hand = drawCards(4); });
+  state.currentIdx = state.players.length - 1;
+  state.gameOver = false;
+  state.pending = null;
+  state.needTarget = null;
+  state.firstTurnDone = true;
+  state.roundNumber = 1;
+  state.subRoundCount = 1;
+  state.phase = 'play';
+  state.playersActedThisRound.clear();
+  state.playersPlayedThisRound.clear();
+  state.fullLogHistory = [];
+  state.localIndices = [0];
+
+  addLog('选将完成，联机对局开始！');
+  const title = document.getElementById('gameModeTitle');
+  if (title) title.textContent = req.label;
+
+  await netHostBroadcastSnapshot();
+  switchView('gameView');
+  advanceTurn();
+}
+
+function netHostHandleSelectGeneral(seat, generalId) {
+  if (state.phase !== 'select_general') return;
+  if (netRoom.selections[seat]) return; // 已经选过了
+  if (state.takenGenerals.includes(generalId)) {
+    // 冲突了，通知客机重选
+    const g = netRoom.guests.find(x => x.seat === seat);
+    if (g && g.channel) {
+      g.channel.send({ type: 'broadcast', event: 'select_conflict', payload: {} }).catch(()=>{});
+    }
+    return;
+  }
+  const gen = GENERALS.find(g => g.id === generalId);
+  if (!gen) return;
+  
+  netRoom.selections[seat] = generalId;
+  state.takenGenerals.push(generalId);
+  
+  const p = state.players[seat];
+  p.general = gen;
+  p.maxHp = gen.hp;
+  p.hp = gen.hp;
+  addLog(`【选将】${p.name} 选择了 ${gen.name}`);
+  
+  if (seat === 0 && typeof window.updateNetGrid === 'function') {
+    window.updateNetGrid();
+  }
+  
+  // 检查是否所有人都选了
+  const aliveHumans = state.players.filter(p => !netRoom.guests.find(g => g.seat === p.id && g.isAI));
+  // 注意：AI 没有发 intent，所以在进入选将前，我们就该给 AI 选好武将，或者这里替 AI 选。
+  // 如果所有人都有 general 了，就开局
+  const allSelected = state.players.every(p => p.general);
+  if (allSelected) {
+    netHostBeginGame();
+  } else {
+    netHostScheduleSnapshot();
+  }
+}
+
 async function netHostFillAIAndStart() {
   if (!netIsHost()) return;
   if (netRoom.started) return;
+  
+  // 给 AI 随机选将，避开玩家已选的
+  let pool = shuffle(GENERALS.slice());
+  netRoom.guests.filter(g => g.isAI).forEach((g) => {
+    const p = state.players[g.seat];
+    if (p && !p.general) {
+      const available = pool.filter(gen => !state.takenGenerals.includes(gen.id));
+      const gen = available[0] || pool[0];
+      p.general = gen;
+      p.maxHp = gen.hp;
+      p.hp = gen.hp;
+      state.takenGenerals.push(gen.id);
+    }
+  });
+
   const mode = netRoom.mode || 'chaos';
   const need = MODE_SIZE[mode] || 4;
   const humans = (netRoom.guests || []).filter(g => !g.isAI).length + 1;
@@ -223,13 +319,10 @@ async function netHostStartGame(skipCheck) {
     }
   }
 
-  const pool = shuffle(GENERALS.slice());
-  state.players.forEach((p, i) => {
-    const g = pool[i % pool.length];
-    p.general = g;
-    p.maxHp = g.hp;
-    p.hp = g.hp;
-  });
+  // 初始化选将状态，不立刻分配武将
+  state.phase = 'select_general';
+  netRoom.selections = {};
+  state.takenGenerals = [];
 
   state.mode = mode;
   if (mode === 'team') {
@@ -256,11 +349,12 @@ async function netHostStartGame(skipCheck) {
 
   const title = document.getElementById('gameModeTitle');
   if (title) title.textContent = req.label;
-  addLog('联机对局开始！模式：' + req.label);
+  addLog('进入选将阶段！模式：' + req.label);
 
-  await netSend(NET_MSG.START, { total: state.players.length, mode: mode, modeLabel: req.label });
+  await netSend(NET_MSG.START, { total: state.players.length, mode: mode, modeLabel: req.label, phase: 'select_general' });
   await netHostBroadcastSnapshot();
 
-  switchView('gameView');
-  advanceTurn();
+  // 房主切到选将界面
+  switchView('generalSelectView');
+  startNetGeneralSelect();
 }
