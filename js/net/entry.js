@@ -2,11 +2,7 @@
  * entry.js — 联机入口：创建/加入房间弹窗、开始按钮
  * ============================================================ */
 
-window.netOpenCreate = async function () {
-  if (typeof netRequireLogin === 'function') {
-    const ok = await netRequireLogin(function () { netOpenCreate(); });
-    if (!ok) return;
-  }
+function netShowCreateForm() {
   const nick = localStorage.getItem('qQiNick') || '玩家';
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">创建联机房间</h3>
@@ -18,11 +14,34 @@ window.netOpenCreate = async function () {
     </div>
   `;
   document.getElementById('playerInfoModal').style.display = 'flex';
+}
+window.netShowCreateForm = netShowCreateForm;
+
+window.netOpenCreate = async function () {
+  if (typeof netRequireLogin === 'function') {
+    const ok = await netRequireLogin(netShowCreateForm);
+    if (!ok) return;
+  }
+  netShowCreateForm();
 };
+
+function netShowRoomEntryForm() {
+  document.getElementById('playerInfoContent').innerHTML = `
+    <h3 style="color:var(--gold);text-align:center;">房间</h3>
+    <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间或输入房间码加入</p>
+    <div class="btn-group" style="justify-content:center;gap:10px;">
+      <button class="btn btn-attack" style="flex:1;" onclick="document.getElementById('playerInfoModal').style.display='none';netShowCreateForm()"><span class="icn"></span>创建房间</button>
+      <button class="btn" style="flex:1;" onclick="document.getElementById('playerInfoModal').style.display='none';netShowJoinForm()"><span class="icn"></span>加入房间</button>
+    </div>
+    <button class="btn btn-close-icon" style="margin-top:12px;width:100%;" onclick="document.getElementById('playerInfoModal').style.display='none'"><span class="icn"></span>取消</button>
+  `;
+  document.getElementById('playerInfoModal').style.display = 'flex';
+}
+window.netShowRoomEntryForm = netShowRoomEntryForm;
 
 window.netOpenRoomEntry = async function () {
   const u = await netGetAuthUser(true);
-  if (!u) { netShowAuthModal(function () { netOpenRoomEntry(); }); return; }
+  if (!u) { netShowAuthModal(netShowRoomEntryForm); return; }
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">房间</h3>
     <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间或输入房间码加入</p>
@@ -35,11 +54,7 @@ window.netOpenRoomEntry = async function () {
   document.getElementById('playerInfoModal').style.display = 'flex';
 };
 
-window.netOpenJoin = async function () {
-  if (typeof netRequireLogin === 'function') {
-    const ok = await netRequireLogin(function () { netOpenJoin(); });
-    if (!ok) return;
-  }
+function netShowJoinForm() {
   const nick = localStorage.getItem('qQiNick') || '玩家';
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">加入联机房间</h3>
@@ -52,6 +67,15 @@ window.netOpenJoin = async function () {
     </div>
   `;
   document.getElementById('playerInfoModal').style.display = 'flex';
+}
+window.netShowJoinForm = netShowJoinForm;
+
+window.netOpenJoin = async function () {
+  if (typeof netRequireLogin === 'function') {
+    const ok = await netRequireLogin(netShowJoinForm);
+    if (!ok) return;
+  }
+  netShowJoinForm();
 };
 
 window.netDoCreate = async function () {

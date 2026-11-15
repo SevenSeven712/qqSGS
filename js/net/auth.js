@@ -63,7 +63,7 @@ function netShowAuthModal(onSuccess) {
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button class="btn btn-attack" id="netAuthSubmit" style="width:100%;" onclick="netDoInlineLogin()"><span class="icn"></span>登录</button>
         <button class="btn" style="width:100%;" onclick="netGoRegister()"><span class="icn"></span>没有账号？去注册</button>
-        <button class="btn btn-close-icon" style="width:100%;" onclick="document.getElementById('playerInfoModal').style.display='none'"><span class="icn"></span>取消</button>
+        <button class="btn btn-close-icon" style="width:100%;" onclick="netCancelAuthModal()"><span class="icn"></span>取消</button>
       </div>
     </div>`;
   const box = document.getElementById('playerInfoContent');
@@ -112,12 +112,18 @@ async function netDoInlineLogin() {
 
 window.netDoInlineLogin = netDoInlineLogin;
 
+window.netCancelAuthModal = function () {
+  window.__netAuthCallback = null;
+  const m = document.getElementById('playerInfoModal');
+  if (m) m.style.display = 'none';
+};
+
 window.netGoLogin = function () { window.location.href = COMMUNITY_LOGIN_URL; };
-window.netGoRegister = function () { window.location.href = COMMUNITY_REGISTER_URL; };
+window.netGoRegister = function () { window.__netAuthCallback = null; window.location.href = COMMUNITY_REGISTER_URL; };
 
 async function netRequireLogin(callback) {
   const u = await netGetAuthUser(true);
-  if (u) { if (typeof callback === 'function') callback(u); return true; }
+  if (u) return true;
   netShowAuthModal(callback);
   return false;
 }
