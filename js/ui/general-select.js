@@ -206,6 +206,19 @@ function startNetGeneralSelect() {
           state.players[mySeat].general = gen;
         }
         window.updateNetGrid();
+        
+        // 【防丢包重试】每 1.5 秒重发一次选将请求，直到离开选将界面
+        if (window._netSelectRetry) clearInterval(window._netSelectRetry);
+        window._netSelectRetry = setInterval(() => {
+          if (state.phase === 'play' || !document.getElementById('generalSelectView').classList.contains('active')) {
+            clearInterval(window._netSelectRetry);
+            window._netSelectRetry = null;
+            return;
+          }
+          if (typeof netGuestSendIntent === 'function') {
+            netGuestSendIntent(NET_INTENT.SELECT_GENERAL, { generalId: generalId });
+          }
+        }, 1500);
       }
     };
   }

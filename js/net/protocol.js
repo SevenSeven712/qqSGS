@@ -147,6 +147,17 @@ function netApplyPublicSnapshot(snap) {
     window.updateNetGrid();
   }
 
+  if (netRoom.role === 'guest' && snap.phase === 'play') {
+    const gv = document.getElementById('generalSelectView');
+    if (gv && gv.classList.contains('active')) {
+      switchView('gameView');
+      if (window._netSelectRetry) {
+        clearInterval(window._netSelectRetry);
+        window._netSelectRetry = null;
+      }
+    }
+  }
+
   if (snap.gameOver && !window.__netResultShown) {
     window.__netResultShown = true;
     if (typeof showResult === 'function') {

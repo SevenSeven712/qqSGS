@@ -197,8 +197,27 @@ async function netHostBeginGame() {
 }
 
 function netHostHandleSelectGeneral(seat, generalId) {
-  if (state.phase !== 'select_general') return;
-  if (netRoom.selections[seat]) return; // 已经选过了
+  if (state.phase !== 'select_general') {
+    // 如果游戏已经开始，说明客机没收到 START 消息，直接补发
+    const mode = netRoom.mode || 'chaos';
+    const MODE_REQ = { duel: { label: '1v1 单挑' }, team: { label: '2v2 合作' }, chaos: { label: '4人大乱斗' }, lord: { label: '主公模式' } };
+    const label = MODE_REQ[mode] ? MODE_REQ[mode].label : '联机对战';
+    netSend(NET_MSG.START, { mode: mode, modeLabel: label, phase: 'play' });
+    netHostBroadcastSnapshot();
+    return;
+  }
+  if (netRoom.selections[seat]) {
+    // 已经选过了，如果全员选完，补发一次
+    const allSelected = state.players.every(p => p.general);
+    if (allSelected) {
+      const mode = netRoom.mode || 'chaos';
+      const MODE_REQ = { duel: { label: '1v1 单挑' }, team: { label: '2v2 合作' }, chaos: { label: '4人大乱斗' }, lord: { label: '主公模式' } };
+      const label = MODE_REQ[mode] ? MODE_REQ[mode].label : '联机对战';
+      netSend(NET_MSG.START, { mode: mode, modeLabel: label, phase: 'play' });
+      netHostBroadcastSnapshot();
+    }
+    return;
+  }
   if (state.takenGenerals.includes(generalId)) {
     // 冲突了，通知客机重选
     const g = netRoom.guests.find(x => x.seat === seat);
