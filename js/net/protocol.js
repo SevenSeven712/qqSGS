@@ -64,6 +64,19 @@ function netSerializePlayerForAll(p) {
 }
 
 function netBuildPublicSnapshot() {
+  let winnerSeat = -1;
+  if (state.gameOver) {
+    const alive = state.players.filter(p => p.hp > 0);
+    if (alive.length === 1) {
+      winnerSeat = state.players.indexOf(alive[0]);
+    } else if (state.mode === 'team') {
+      const aliveTeams = new Set(alive.map(p => state.teams[state.players.indexOf(p)]));
+      if (aliveTeams.size === 1) {
+        const winTeam = [...aliveTeams][0];
+        winnerSeat = state.teams.findIndex(t => t === winTeam);
+      }
+    }
+  }
   return {
     mode: state.mode,
     currentIdx: state.currentIdx,
@@ -71,6 +84,7 @@ function netBuildPublicSnapshot() {
     roundNumber: state.roundNumber,
     subRoundCount: state.subRoundCount,
     gameOver: state.gameOver,
+    winnerSeat: winnerSeat,
     teams: state.teams || [],
     pending: state.pending ? JSON.parse(JSON.stringify(state.pending)) : null,
     players: state.players.map(netSerializePlayerForAll),
@@ -131,6 +145,21 @@ function netApplyPublicSnapshot(snap) {
 
   if (state.phase === 'select_general' && typeof window.updateNetGrid === 'function') {
     window.updateNetGrid();
+  }
+
+  if (snap.gameOver && !window.__netResultShown) {
+    window.__netResultShown = true;
+    if (typeof showResult === 'function') {
+      let isWin = false;
+      if (snap.winnerSeat !== undefined && snap.winnerSeat !== -1) {
+        if (state.mode === 'team') {
+          isWin = sameTeam(netRoom.seat, snap.winnerSeat);
+        } else {
+          isWin = netRoom.seat === snap.winnerSeat;
+        }
+      }
+      showResult(isWin);
+    }
   }
 
   if (typeof refreshUI === 'function') refreshUI();

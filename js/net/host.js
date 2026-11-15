@@ -176,6 +176,7 @@ async function netHostBeginGame() {
   state.roundNumber = 1;
   state.subRoundCount = 1;
   state.phase = 'play';
+  window.__netResultShown = false;
   state.playersActedThisRound.clear();
   state.playersPlayedThisRound.clear();
   state.fullLogHistory = [];
@@ -184,6 +185,9 @@ async function netHostBeginGame() {
   addLog('选将完成，联机对局开始！');
   const title = document.getElementById('gameModeTitle');
   if (title) title.textContent = req.label;
+
+  // 通知所有客机离开选将界面，进入游戏
+  await netSend(NET_MSG.START, { mode: mode, modeLabel: req.label, phase: 'play' });
 
   await netHostBroadcastSnapshot();
   switchView('gameView');

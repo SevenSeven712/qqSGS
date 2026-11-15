@@ -159,6 +159,7 @@ function checkVictory() {
     }
 
 function showResult(w) {
+      if (typeof netHostBroadcastSnapshot === 'function') netHostBroadcastSnapshot();
       const m = document.getElementById('resultModal');
       const c = document.getElementById('resultContent');
       c.innerHTML =

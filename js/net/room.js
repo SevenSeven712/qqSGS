@@ -311,6 +311,7 @@ function netOnPublicState(payload) {
 function netOnStart(payload) {
   if (!payload) return;
   if (netRoom.role !== 'guest') return;
+  window.__netResultShown = false;
   netRoom.started = true;
   if (payload.mode && NET_MODE_VALID.indexOf(payload.mode) >= 0) netRoom.mode = payload.mode;
   const title = document.getElementById('gameModeTitle');
