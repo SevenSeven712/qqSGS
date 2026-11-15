@@ -4,6 +4,14 @@
  * ============================================================ */
 
 function updateRoundDisplay() {
+      const phaseEl = document.getElementById('phaseBadge');
+      if (phaseEl) {
+        if (state.gameOver) phaseEl.textContent = '游戏结束';
+        else if (state.phase === 'play') phaseEl.textContent = '出牌阶段';
+        else if (state.phase === 'draw') phaseEl.textContent = '摸牌阶段';
+        else if (state.phase === 'endTurn') phaseEl.textContent = '弃牌阶段';
+        else phaseEl.textContent = '准备中';
+      }
       const el = document.getElementById('roundNumberDisplay');
       if (el) el.textContent = `第${state.roundNumber}回合`;
       const subEl = document.getElementById('subRoundDisplay');

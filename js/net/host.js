@@ -170,7 +170,7 @@ async function netHostBeginGame() {
   state.deck = shuffle(createDeck());
   state.discard = [];
   state.players.forEach(p => { p.hand = drawCards(4); });
-  state.currentIdx = state.players.length - 1;
+  state.currentIdx = 0;
   state.gameOver = false;
   state.pending = null;
   state.needTarget = null;
@@ -193,7 +193,7 @@ async function netHostBeginGame() {
 
   await netHostBroadcastSnapshot();
   switchView('gameView');
-  advanceTurn();
+  refreshUI();
 }
 
 function netHostHandleSelectGeneral(seat, generalId) {
@@ -372,7 +372,7 @@ async function netHostStartGame(skipCheck) {
   state.deck = shuffle(createDeck());
   state.discard = [];
   state.players.forEach(p => { p.hand = drawCards(4); });
-  state.currentIdx = state.players.length - 1;
+  state.currentIdx = 0;
   state.gameOver = false;
   state.pending = null;
   state.needTarget = null;
