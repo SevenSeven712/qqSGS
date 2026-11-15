@@ -328,6 +328,20 @@ async function netHostStartGame(skipCheck) {
   netRoom.selections = {};
   state.takenGenerals = [];
 
+  // 【关键修复】给 AI 玩家自动分配武将，避免 allSelected 永远为 false
+  let pool = shuffle(GENERALS.slice());
+  state.players.forEach((p, i) => {
+    if (netRoom.guests.find(g => g.seat === i && g.isAI)) {
+      const gen = pool.find(g => !state.takenGenerals.includes(g.id));
+      if (gen) {
+        p.general = gen;
+        p.maxHp = gen.hp;
+        p.hp = gen.hp;
+        state.takenGenerals.push(gen.id);
+      }
+    }
+  });
+
   state.mode = mode;
   if (mode === 'team') {
     state.teams = state.players.map(function (_, i) { return i % 2; });

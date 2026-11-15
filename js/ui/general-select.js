@@ -197,8 +197,15 @@ function startNetGeneralSelect() {
       
       if (netIsHost()) {
         if (typeof netHostHandleSelectGeneral === 'function') netHostHandleSelectGeneral(0, generalId);
+        window.updateNetGrid();
       } else {
         if (typeof netGuestSendIntent === 'function') netGuestSendIntent(NET_INTENT.SELECT_GENERAL, { generalId: generalId });
+        const mySeat = netRoom.seat;
+        const gen = GENERALS.find(g => g.id === generalId);
+        if (state.players[mySeat]) {
+          state.players[mySeat].general = gen;
+        }
+        window.updateNetGrid();
       }
     };
   }
@@ -210,10 +217,8 @@ function startNetGeneralSelect() {
     
     // 如果我已经选了武将，直接显示等待
     if (me && me.general) {
-      if (!grid.querySelector('.general-card')) {
-        grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:1.2em;">你已选择【' + me.general.name + '】，等待其他玩家...</div>';
-        if (confirmBtn) confirmBtn.style.display = 'none';
-      }
+      grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:1.2em;">你已选择【' + me.general.name + '】，等待其他玩家...</div>';
+      if (confirmBtn) confirmBtn.style.display = 'none';
       return;
     }
 
