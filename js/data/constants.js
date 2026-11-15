@@ -9,7 +9,7 @@ const AI_NAMES = ['乱世枭雄', '桃园豪杰', '江东猛虎', '卧龙先生'
 
 const RANKS = ['青铜', '白银', '黄金', '铂金', '钻石', '王者'];
 
-const RANK_COLORS = { '青铜': '#cd7f32', '白银': '#c0c0c0', '黄金': '#ffd700', '铂金': '#e5e4e2', '钻石': '#b9f2ff',
+const RANK_COLORS = { '青铜': '#cd7f32', '白银': '#c0c0c0', '黄金': '#b3362b', '铂金': '#e5e4e2', '钻石': '#b9f2ff',
       '王者': '#ff4500' };
 
 const DEFAULT_FRIENDS = [];

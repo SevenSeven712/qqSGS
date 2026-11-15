@@ -47,6 +47,7 @@ function netSerializePlayerForAll(p) {
   });
   return {
     name: p.name,
+    avatar: p.avatar || '',
     hp: p.hp,
     maxHp: p.maxHp,
     handCount: p.hand ? p.hand.length : 0,
@@ -96,6 +97,7 @@ function netApplyPublicSnapshot(snap) {
     return {
       id: i,
       name: sp.name,
+      avatar: sp.avatar || '',
       hp: sp.hp,
       maxHp: sp.maxHp,
       hand: (i === ((typeof netRoom !== 'undefined' && netRoom && netRoom.role === 'guest') ? netRoom.seat : 0)) ? (old.hand || []) : new Array(Math.max(0, sp.handCount || 0)).fill(null),

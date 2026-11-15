@@ -9,8 +9,7 @@ addChat('系统', '欢迎来到战场！点击左下角图标打开聊天。');
 switchView('mainMenu');
 updateRankDisplay();
 
-if (localStorage.getItem('qQiNick')) document.getElementById('nicknameInput').value = localStorage.getItem(
-    'qQiNick');
+// 昵称由社区账号同步，启动时不再写 nicknameInput
 
 if (!localStorage.getItem('qQiBetaShown')) {
       setTimeout(() => {

@@ -27,8 +27,10 @@ function isLocal(i) { return state.localIndices.includes(i); }
 function sameTeam(a, b) { return state.mode === 'team' && state.teams[a] !== undefined && state.teams[a] === state
         .teams[b]; }
 
-function getTeamColor(i) { if (state.mode !== 'team') return '#fff'; return state.teams[i] === 0 ? '#ffd700' :
-        '#ff4444'; }
+function getTeamColor(i) {
+  if (state.mode !== 'team') return 'var(--text)';
+  return state.teams[i] === 0 ? '#b3362b' : '#4a6c8c';
+}
 
 function refreshUI() { renderPlayers();
       renderMyHand();

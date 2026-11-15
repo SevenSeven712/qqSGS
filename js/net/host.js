@@ -202,6 +202,7 @@ async function netHostStartGame(skipCheck) {
       state.players.push({
         id: 0,
         name: netRoom.myName,
+        avatar: netRoom.myAvatar || '',
         general: null, hp: 0, maxHp: 0,
         hand: [], equip: {},
         rank: getPlayerRank(),
@@ -213,6 +214,7 @@ async function netHostStartGame(skipCheck) {
       state.players.push({
         id: s,
         name: g ? g.name : '玩家' + s,
+        avatar: (g && g.avatar) || '',
         general: null, hp: 0, maxHp: 0,
         hand: [], equip: {},
         rank: '青铜',

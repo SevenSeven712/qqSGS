@@ -11,7 +11,7 @@ function renderOfflineNameInputs(count) {
         div.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;';
         div.innerHTML =
           `<span style="color:var(--gold);min-width:30px;font-weight:bold;">P${i+1}</span>
-            <input id="oname-${i}" type="text" maxlength="8" value="玩家${i+1}" style="flex:1;background:#1f120e;border:1px solid #4a3020;border-radius:6px;padding:8px 10px;color:#f0e0d0;font-size:0.95em;text-align:center;">
+            <input id="oname-${i}" type="text" maxlength="8" value="玩家${i+1}" style="flex:1;background:#fffdf7;border:1px solid #d6cdb8;border-radius:6px;padding:8px 10px;color:#2a2520;font-size:0.95em;text-align:center;">
             <span style="color:#7a6550;font-size:0.8em;">武</span>`;
         container.appendChild(div);
       }
@@ -102,12 +102,12 @@ window.toggleDiscardCard = function(idx) {
       if (!el) return;
       if (state.selectedDiscardIndices.has(idx)) {
         state.selectedDiscardIndices.delete(idx);
-        el.style.borderColor = '#5a4030';
+        el.style.borderColor = '#d6cdb8';
         el.style.transform = 'scale(1)';
         el.style.boxShadow = 'none';
       } else {
         state.selectedDiscardIndices.add(idx);
-        el.style.borderColor = '#ff6644';
+        el.style.borderColor = '#b3362b';
         el.style.transform = 'scale(1.08)';
         el.style.boxShadow = '0 0 10px rgba(255,102,68,0.6)';
       }

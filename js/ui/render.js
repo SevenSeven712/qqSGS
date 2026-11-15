@@ -36,18 +36,22 @@ function renderPlayers() {
         if (p.equip.armor) e += `<span class="equip-tag" title="${p.equip.armor.desc}">盾 ${p.equip.armor.name}</span>`;
         if (p.equip.plus1) e += `<span class="equip-tag">+1 马</span>`;
         if (p.equip.minus1) e += `<span class="equip-tag">-1 马</span>`;
-        const lockedStyle = p.locked ? 'border-color:#aa66ff;box-shadow:0 0 15px rgba(170,102,255,0.5);' : '';
+        const lockedStyle = p.locked ? 'border-color:#6a4a9a;box-shadow:0 0 15px rgba(106,74,154,0.28);' : '';
         const showHandCount = !state.offlineMode || i === state.currentIdx || p.hp <= 0;
+        const av = (p.avatar && /^https?:\/\//.test(p.avatar)) ? p.avatar : '';
+        const avatarContent = av
+          ? '<img class="avatar-img" src="' + av.replace(/"/g, '%22') + '" alt="" onerror="this.remove()">'
+          : String(p.name || 'U').charAt(0).toUpperCase();
         return `<div class="player-card ${a} ${dc}" id="player-${i}" onclick="showPlayerPopup(${i})" ${lockedStyle?'style="'+lockedStyle+'"':''}>
             <div class="turn-badge">行动中</div>
-            <div class="player-avatar" style="background:${p.general.color};">${gIcon(p.general)}${avatarImg(p.general)}</div>
+            <div class="player-avatar" style="background:${p.general?p.general.color:'#8a6f3e'};">${avatarContent}</div>
             <div class="player-rank">${p.rank}</div>
             <div class="player-name" style="color:${tc};">${d?p.name+' (阵亡)':p.name}</div>
             <div class="hp-bar">${Array.from({length:p.maxHp},(_,j)=>`<span class="hp-dot${j>=p.hp?' lost':''}"></span>`).join('')}</div>
             <div class="hand-count">${showHandCount?`牌 ${p.hand.length}张`:'?'}</div>
             ${e?`<div class="equip-area">${e}</div>`:''}
-            ${p.locked?`<div class="buff-tag" style="color:#aa66ff;">${svgIcon('lock')} 已锁定</div>`:''}
-            ${p.goldenShield?`<div class="buff-tag" style="color:#ffd700;">金蝉护法</div>`:''}
+            ${p.locked?`<div class="buff-tag" style="color:#6a4a9a;">${svgIcon('lock')} 已锁定</div>`:''}
+            ${p.goldenShield?`<div class="buff-tag" style="color:#b3362b;">金蝉护法</div>`:''}
             ${p.waterShield?`<div class="buff-tag" style="color:#4a90c8;">水护盾</div>`:''}
           </div>`;
       }).join('');
@@ -65,49 +69,49 @@ window.showPlayerPopup = function(idx) {
               <div style="position:relative;overflow:hidden;width:80px;height:80px;border-radius:50%;background:${p.general.color};display:flex;align-items:center;justify-content:center;font-size:3em;border:3px solid ${rc};box-shadow:0 0 20px ${rc};">
                 ${gIcon(p.general)}${avatarImg(p.general)}
               </div>
-              <div style="position:absolute;top:-5px;right:-5px;background:${rc};color:#1a0a05;padding:2px 8px;border-radius:12px;font-size:0.75em;font-weight:bold;">
+              <div style="position:absolute;top:-5px;right:-5px;background:${rc};color:#faf6ec;padding:2px 8px;border-radius:12px;font-size:0.75em;font-weight:bold;">
                 ${p.rank}
               </div>
             </div>
             <div style="display:flex;align-items:baseline;gap:6px;margin:12px 0 4px 0;">
-              <h3 style="color:#ffe9b5;margin:0;font-size:1.3em;">${p.name}</h3>
+              <h3 style="color:var(--text);margin:0;font-size:1.3em;">${p.name}</h3>
               <span class="icn-stat-sm icn-rank" style="opacity:0.9;"></span>
               <span style="color:${rc};font-size:0.75em;font-weight:bold;opacity:0.9;">${p.rank}</span>
             </div>
             <div style="display:flex;gap:15px;margin-bottom:15px;">
               <div class="stat-item" style="flex-direction:column;">
                 <span style="font-size:1.8em;">${svgIcon('heart')}</span>
-                <span style="color:#b8a080;font-size:0.9em;">${p.hp}/${p.maxHp}</span>
+                <span style="color:#6b6357;font-size:0.9em;">${p.hp}/${p.maxHp}</span>
               </div>
               <div class="stat-item" style="flex-direction:column;">
                 <span style="font-size:1.8em;">牌</span>
-                <span style="color:#b8a080;font-size:0.9em;">${p.hand.length}张</span>
+                <span style="color:#6b6357;font-size:0.9em;">${p.hand.length}张</span>
               </div>
             </div>
-            <div style="background:#2a1a10;padding:15px;border-radius:12px;width:100%;margin-bottom:15px;">
+            <div style="background:#faf6ec;padding:15px;border-radius:12px;width:100%;margin-bottom:15px;">
               <h4 style="color:var(--gold);margin-bottom:8px;">【${p.general.name}】</h4>
-              <p><b>技能：</b><span style="color:#4caf50;">${p.general.skill}</span></p>
-              <p style="color:#b8a080;font-size:0.9em;margin-top:4px;">${p.general.desc}</p>
+              <p><b>技能：</b><span style="color:#5a7d52;">${p.general.skill}</span></p>
+              <p style="color:#6b6357;font-size:0.9em;margin-top:4px;">${p.general.desc}</p>
             </div>
             <div style="width:100%;">
-              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #3a2a1a;">
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f6f0e2;">
                 <span class="icn-stat icn-win"></span>
-                <span style="color:#b8a080;font-size:0.85em;">胜利</span>
-                <span style="margin-left:auto;font-weight:bold;color:#4caf50;">${p.wins}</span>
+                <span style="color:#6b6357;font-size:0.85em;">胜利</span>
+                <span style="margin-left:auto;font-weight:bold;color:#5a7d52;">${p.wins}</span>
               </div>
-              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #3a2a1a;">
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f6f0e2;">
                 <span class="icn-stat icn-lose"></span>
-                <span style="color:#b8a080;font-size:0.85em;">失败</span>
-                <span style="margin-left:auto;font-weight:bold;color:#f44336;">${p.losses}</span>
+                <span style="color:#6b6357;font-size:0.85em;">失败</span>
+                <span style="margin-left:auto;font-weight:bold;color:#b3362b;">${p.losses}</span>
               </div>
-              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #3a2a1a;">
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f6f0e2;">
                 <span class="icn-stat icn-rate"></span>
-                <span style="color:#b8a080;font-size:0.85em;">胜率</span>
+                <span style="color:#6b6357;font-size:0.85em;">胜率</span>
                 <span style="margin-left:auto;font-weight:bold;color:var(--gold);">${winRate}</span>
               </div>
               <div style="display:flex;align-items:center;gap:8px;padding:6px 0;">
                 <span class="icn-stat icn-rank"></span>
-                <span style="color:#b8a080;font-size:0.85em;">段位</span>
+                <span style="color:#6b6357;font-size:0.85em;">段位</span>
                 <span style="margin-left:auto;font-weight:bold;color:${rc};">${p.rank}</span>
               </div>
             </div>
@@ -122,14 +126,14 @@ function renderEquipArea() {
       if (!a) return;
       const cur = getCur();
       if (!cur || !isLocal(state.currentIdx) || state.gameOver) { a.innerHTML = ''; return; }
-      let h = '<span style="color:#b8a080;font-size:0.75em;">装备区：</span>';
+      let h = '<span style="color:#6b6357;font-size:0.75em;">装备区：</span>';
       ['weapon', 'armor', 'plus1', 'minus1'].forEach(s => {
         if (cur.equip[s]) {
           h +=
             `<span class="equip-tag" style="cursor:pointer;" data-slot="${s}" title="点击卸下">${cur.equip[s].name}</span>`;
         } else {
           h +=
-            `<span style="color:#4a3020;font-size:0.65em;">[${s==='weapon'?'武器':s==='armor'?'防具':s==='plus1'?'+1马':'-1马'}]</span>`;
+            `<span style="color:#d6cdb8;font-size:0.65em;">[${s==='weapon'?'武器':s==='armor'?'防具':s==='plus1'?'+1马':'-1马'}]</span>`;
         }
       });
       a.innerHTML = h;

@@ -19,8 +19,9 @@ document.getElementById('btnProfile').onclick = async () => {
         if (!ok) return;
       }
       switchView('profileView');
-      document.getElementById('nicknameInput').value = localStorage.getItem('qQiNick') || '玩家';
-      updateProfileRankDisplay(); };
+      updateProfileRankDisplay();
+      if (typeof renderProfileHeader === 'function') renderProfileHeader();
+    };
 
 document.getElementById('btnBackMenu2').onclick = () => switchView('mainMenu');
 document.getElementById('btnBackOffline').onclick = () => switchView('mainMenu');
@@ -35,6 +36,7 @@ document.querySelectorAll('#cardTabsSub .tab-btn').forEach(el => {
     });
 
 document.getElementById('btnBackActivity').onclick = () => switchView('mainMenu');
+document.getElementById('btnLogout').onclick = () => { if (typeof netDoLogout === 'function') netDoLogout(); };
 document.getElementById('btnBackProfile').onclick = () => switchView('mainMenu');
 document.getElementById('btnBackStats').onclick = () => switchView('profileView');
 document.getElementById('btnBackHistory').onclick = () => switchView('profileView');
@@ -113,9 +115,7 @@ document.querySelectorAll('.room-mode-btn').forEach(b => b.onclick = e => { docu
       e.target.classList.add('selected');
       state.mode = e.target.dataset.mode; });
 
-document.getElementById('btnSaveNickname').onclick = () => { const n = document.getElementById('nicknameInput').value;
-      localStorage.setItem('qQiNick', n);
-      addLog('昵称已保存'); };
+// 昵称由社区账号同步，不再本地保存（旧输入框已移除）
 
 document.getElementById('btnViewStats').onclick = () => showStats();
 document.getElementById('btnViewHistory').onclick = () => showHistory();
@@ -136,14 +136,21 @@ document.querySelectorAll('.offline-mode-btn').forEach(b => b.onclick = e => { d
 
 document.getElementById('btnStartMatch').onclick = () => startMatch();
 
-document.getElementById('btnOnlineMatch').onclick = async () => {
+window._onOnlineClick = async () => {
+  console.log('[联机] 点击联机对战');
   if (typeof netRequireLogin === 'function') {
+    console.log('[联机] 检查登录状态...');
     const ok = await netRequireLogin();
+    console.log('[联机] 登录检查结果:', ok);
     if (!ok) return;
+  }
+  if (typeof netOpenRoomEntry === 'function') {
+    netOpenRoomEntry();
+    return;
   }
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">联机对战</h3>
-    <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间让好友加入，或输入房间码加入</p>
+    <p style="color:#6b6357;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间让好友加入，或输入房间码加入</p>
     <div class="btn-group" style="justify-content:center;gap:10px;margin-top:8px;">
       <button class="btn btn-attack" style="flex:1;" onclick="netOpenCreate()"><span class="icn"></span>创建房间</button>
       <button class="btn" style="flex:1;" onclick="netOpenJoin()"><span class="icn"></span>加入房间</button>
@@ -152,6 +159,7 @@ document.getElementById('btnOnlineMatch').onclick = async () => {
   `;
   document.getElementById('playerInfoModal').style.display = 'flex';
 };
+document.getElementById('btnOnlineMatch').onclick = window._onOnlineClick;
 
 document.getElementById('btnStartOffline').onclick = () => {
       const total = { lord: 6, team: 4, chaos: 4, duel: 2 } [state.mode] || 2;

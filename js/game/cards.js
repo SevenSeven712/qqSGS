@@ -120,7 +120,7 @@ function useCard(card, fi, ti) {
             if (drawn.length > 0) {
               p.hand.push(...drawn);
               addLog(`  ${p.name}摸了1张牌`);
-              floatText(`player-${i}`, '+1张', '#ffdd88');
+              floatText(`player-${i}`, '+1张', '#2a2520');
             }
           }
         });
@@ -253,7 +253,7 @@ function useCard(card, fi, ti) {
               state.discard.push(discarded);
               t.equip[equipped] = null;
               addLog(`  ${t.name}丢弃了装备【${discarded.name}】`);
-              floatText(`player-${ti}`, `-${discarded.name}`, '#ff6644');
+              floatText(`player-${ti}`, `-${discarded.name}`, '#b3362b');
             } else {
               addLog(`  ${t.name}没有装备牌可丢弃`);
             }

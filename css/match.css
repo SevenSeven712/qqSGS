@@ -32,7 +32,7 @@
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'STKaiti', 'KaiTi', serif;
-  color: #ffd700; font-weight: bold; font-size: 1em;
+  color: #b3362b; font-weight: bold; font-size: 1em;
 }
 
 .match-opp-info { flex: 1; text-align: left; }
@@ -53,7 +53,7 @@
 
 .match-text {
   font-size: 4.5em; font-weight: 900; color: var(--gold);
-  text-shadow: 0 0 30px rgba(255, 215, 0, 0.7), 0 0 60px rgba(255, 215, 0, 0.4);
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.7), 0 0 60px rgba(179,54,43,0.26);
   animation: matchTextPulse 0.8s ease-in-out infinite;
   letter-spacing: 12px;
 }
@@ -61,7 +61,34 @@
 .ellipse-cat {
   display: inline-block; padding: 8px 22px; border-radius: 30px;
   background: linear-gradient(180deg, var(--gold), #a08030);
-  color: #1a1205; font-weight: bold; letter-spacing: 3px;
+  color: var(--text); font-weight: bold; letter-spacing: 3px;
   margin: 6px;
   box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4);
+}
+
+/* ============================================================
+ * 宣纸水墨主题覆盖层（match / 匹配动画）
+ * ============================================================ */
+
+.match-opp-item {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.match-opp-avatar {
+  background: var(--panel-light);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  font-family: 'STKaiti','KaiTi','Songti SC',serif;
+}
+.match-opp-name { color: var(--text); }
+.match-opp-rank { color: var(--text-muted); }
+.match-opp-status { color: #5a7d52; }
+.match-core { filter: none; }
+.ellipse-cat {
+  background: var(--red);
+  color: #fdf6e8;
+  box-shadow: none;
+  letter-spacing: 3px;
+  border-radius: var(--radius);
 }

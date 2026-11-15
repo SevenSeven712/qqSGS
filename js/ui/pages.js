@@ -38,7 +38,7 @@ function renderCardsInfo(tab = 'all', sub = 'weapon') {
       if (subTabs) subTabs.style.display = tab === 'equip' ? 'flex' : 'none';
 
       const cardStyle =
-        'background:linear-gradient(180deg,#2a1a10 0%,#180a05 100%);padding:12px 10px;border-radius:14px;width:140px;text-align:center;border:1px solid #4a3020;box-shadow:0 4px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(201,160,80,0.15);transition:transform 0.2s;';
+        'background:linear-gradient(180deg,#faf6ec 0%,#180a05 100%);padding:12px 10px;border-radius:14px;width:140px;text-align:center;border:1px solid #d6cdb8;box-shadow:0 4px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(201,160,80,0.15);transition:transform 0.2s;';
       const cardHover =
         'onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'"';
 
@@ -83,7 +83,7 @@ function renderCardsInfo(tab = 'all', sub = 'weapon') {
           }
           h += `</div>`;
         } else {
-          h += '<div style="color:#b8a080;text-align:center;padding:20px;">暂无此类型卡牌</div>';
+          h += '<div style="color:#6b6357;text-align:center;padding:20px;">暂无此类型卡牌</div>';
         }
       } else {
         if (cats[tab]) {

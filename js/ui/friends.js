@@ -72,7 +72,7 @@ function renderRoom() { if (!state.roomState) return; const membersEl = document
           `<div style="padding:6px 0;display:flex;justify-content:space-between;align-items:center;"><span>${m.name}</span><div style="display:flex;gap:6px;align-items:center;"><span style="color:${rc};font-size:0.75em;">${m.rank}</span><button class="btn" style="padding:2px 8px;font-size:0.7em;" onclick="removeFromRoom('${m.name.replace(/'/g,"\\'")}')"><span class="icn"></span>移除</button></div></div>`; });
       membersEl.innerHTML = membersHtml || '<span style="color:#888;">暂无成员</span>';
       invitedEl.innerHTML = state.roomState.invited.length > 0 ? state.roomState.invited.map(n =>
-        `<div style="padding:4px 0;color:#4caf50;">${svgIcon('mail')} ${n} (已邀请)</div>`).join('') :
+        `<div style="padding:4px 0;color:#5a7d52;">${svgIcon('mail')} ${n} (已邀请)</div>`).join('') :
         '<span style="color:#888;">暂无邀请</span>'; }
 
 function loadFriends() {
@@ -85,7 +85,7 @@ function loadFriends() {
           reqList.innerHTML = '<div style="color:#ff9800;font-weight:bold;margin-bottom:6px;">待处理申请</div>' + reqs.map((
             r, i) => {
             const rc = RANK_COLORS[r.rank] || '#fff';
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#2a1a10;border-radius:6px;margin-bottom:4px;"><div><span>${r.name}</span><span style="color:${rc};font-size:0.75em;"> ${r.rank}</span></div><div style="display:flex;gap:4px;"><button class="btn" style="padding:4px 10px;font-size:0.7em;" onclick="acceptFriendRequest('${r.name.replace(/'/g,"\\'")}')"><span class="icn"></span>接受</button><button class="btn" style="padding:4px 10px;font-size:0.7em;" onclick="rejectFriendRequest('${r.name.replace(/'/g,"\\'")}')"><span class="icn"></span>拒绝</button></div></div>`;
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#faf6ec;border-radius:6px;margin-bottom:4px;"><div><span>${r.name}</span><span style="color:${rc};font-size:0.75em;"> ${r.rank}</span></div><div style="display:flex;gap:4px;"><button class="btn" style="padding:4px 10px;font-size:0.7em;" onclick="acceptFriendRequest('${r.name.replace(/'/g,"\\'")}')"><span class="icn"></span>接受</button><button class="btn" style="padding:4px 10px;font-size:0.7em;" onclick="rejectFriendRequest('${r.name.replace(/'/g,"\\'")}')"><span class="icn"></span>拒绝</button></div></div>`;
           }).join('');
         }
       }
@@ -96,13 +96,13 @@ function loadFriends() {
         const total = f.wins + f.losses;
         const winRate = total > 0 ? Math.round(f.wins / total * 100) + '%' : '-';
         const rc = RANK_COLORS[f.rank] || '#fff';
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #3a2a1a;">
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #f6f0e2;">
             <div>
               <span>${f.name}</span>
               <span style="color:${rc};font-size:0.75em;"> ${f.rank}</span>
             </div>
             <div style="display:flex;gap:6px;align-items:center;">
-              <span style="color:${f.online?'#4caf50':'#888'};font-size:0.75em;">${dotIcon(f.online)} ${f.online?'在线':'离线'}</span>
+              <span style="color:${f.online?'#5a7d52':'#888'};font-size:0.75em;">${dotIcon(f.online)} ${f.online?'在线':'离线'}</span>
               <button class="btn" style="padding:4px 12px;font-size:0.7em;" onclick="viewFriendStats('${f.name.replace(/'/g,"\\'")}')"><span class="icn"></span>战绩</button>
               ${f.online?`<button class="btn" style="padding:4px 12px;font-size:0.7em;" onclick="inviteFriendToRoom('${f.name.replace(/'/g,"\\'")}')"><span class="icn"></span>邀请</button>`:''}
               <button class="btn" style="padding:4px 12px;font-size:0.7em;" onclick="removeFriend('${f.name.replace(/'/g,"\\'")}')"><span class="icn"></span>删除</button>
@@ -125,30 +125,30 @@ function viewFriendStats(name) {
       document.getElementById('playerInfoContent').innerHTML = `
           <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 8px 0;">
             <div style="display:flex;align-items:baseline;gap:8px;">
-              <h3 style="color:#ffe9b5;margin:0;font-size:1.3em;">${f.name}</h3>
+              <h3 style="color:var(--text);margin:0;font-size:1.3em;">${f.name}</h3>
               <span class="icn-stat icn-rank" style="opacity:0.9;"></span>
               <span style="color:${rc};font-size:0.8em;font-weight:bold;opacity:0.9;">${f.rank}</span>
             </div>
           </div>
           <div style="margin-top:4px;padding:0 4px;">
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid #3a2a1a;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid #f6f0e2;">
               <span class="icn-stat icn-win"></span>
-              <span style="color:#b8a080;font-size:0.9em;">胜利</span>
-              <span style="margin-left:auto;font-weight:bold;color:#4caf50;font-size:1.1em;">${f.wins}</span>
+              <span style="color:#6b6357;font-size:0.9em;">胜利</span>
+              <span style="margin-left:auto;font-weight:bold;color:#5a7d52;font-size:1.1em;">${f.wins}</span>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid #3a2a1a;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid #f6f0e2;">
               <span class="icn-stat icn-lose"></span>
-              <span style="color:#b8a080;font-size:0.9em;">失败</span>
-              <span style="margin-left:auto;font-weight:bold;color:#f44336;font-size:1.1em;">${f.losses}</span>
+              <span style="color:#6b6357;font-size:0.9em;">失败</span>
+              <span style="margin-left:auto;font-weight:bold;color:#b3362b;font-size:1.1em;">${f.losses}</span>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid #3a2a1a;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid #f6f0e2;">
               <span class="icn-stat icn-rate"></span>
-              <span style="color:#b8a080;font-size:0.9em;">胜率</span>
-              <span style="margin-left:auto;font-weight:bold;color:#ffdd88;font-size:1.1em;">${winRate}</span>
+              <span style="color:#6b6357;font-size:0.9em;">胜率</span>
+              <span style="margin-left:auto;font-weight:bold;color:#2a2520;font-size:1.1em;">${winRate}</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 6px;">
               <span class="icn-stat icn-rank"></span>
-              <span style="color:#b8a080;font-size:0.9em;">当前段位</span>
+              <span style="color:#6b6357;font-size:0.9em;">当前段位</span>
               <span style="margin-left:auto;font-weight:bold;color:${rc};font-size:1.05em;">${f.rank}</span>
             </div>
           </div>
@@ -202,7 +202,7 @@ function showInviteModal() {
       if (onlineFriends.length === 0) {
         document.getElementById('inviteContent').innerHTML = `
             <h3 style="color:var(--gold);">邀请好友</h3>
-            <p style="color:#b8a080;padding:10px;">暂无在线好友，快去添加吧！</p>
+            <p style="color:#6b6357;padding:10px;">暂无在线好友，快去添加吧！</p>
             <button class="btn" onclick="document.getElementById('inviteModal').style.display='none';switchView('friendsView');loadFriends();"><span class="icn"></span>前往添加</button>
             <button class="btn" style="margin-top:6px;" onclick="document.getElementById('inviteModal').style.display='none'"><span class="icn"></span>关闭</button>
           `;
@@ -218,12 +218,12 @@ function showInviteModal() {
         const alreadyIn = state.roomState.members.find(m => m.name === f.name);
         const alreadyInvited = state.roomState.invited.indexOf(f.name) >= 0;
         content += `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #3a2a1a;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #f6f0e2;">
               <div>
                 <span>${f.name}</span>
                 <span style="color:${rc};font-size:0.75em;"> ${f.rank}</span>
               </div>
-              ${alreadyIn?'<span style="color:#4caf50;font-size:0.8em;">已在房间</span>':alreadyInvited?'<span style="color:#ff9800;font-size:0.8em;">已邀请</span>':`<button class="btn" style="padding:4px 12px;font-size:0.8em;" onclick="inviteToRoomFromModal('${f.name.replace(/'/g,"\\'")}')"><span class="icn"></span>邀请</button>`}
+              ${alreadyIn?'<span style="color:#5a7d52;font-size:0.8em;">已在房间</span>':alreadyInvited?'<span style="color:#ff9800;font-size:0.8em;">已邀请</span>':`<button class="btn" style="padding:4px 12px;font-size:0.8em;" onclick="inviteToRoomFromModal('${f.name.replace(/'/g,"\\'")}')"><span class="icn"></span>邀请</button>`}
             </div>
           `;
       });

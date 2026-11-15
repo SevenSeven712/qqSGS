@@ -3,11 +3,9 @@
  * ============================================================ */
 
 function netShowCreateForm() {
-  const nick = localStorage.getItem('qQiNick') || '玩家';
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">创建联机房间</h3>
-    <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">输入你的昵称</p>
-    <input id="netNickInput" type="text" maxlength="12" value="${nick}" style="width:100%;padding:10px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1em;text-align:center;box-sizing:border-box;">
+    <p style="color:#6b6357;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建后将生成 4 位房间码，分享给好友即可加入</p>
     <div class="btn-group" style="justify-content:center;margin-top:14px;">
       <button class="btn btn-attack" onclick="netDoCreate()"><span class="icn"></span>创建</button>
       <button class="btn" onclick="document.getElementById('playerInfoModal').style.display='none'"><span class="icn"></span>取消</button>
@@ -28,7 +26,7 @@ window.netOpenCreate = async function () {
 function netShowRoomEntryForm() {
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">房间</h3>
-    <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间或输入房间码加入</p>
+    <p style="color:#6b6357;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间或输入房间码加入</p>
     <div class="btn-group" style="justify-content:center;gap:10px;">
       <button class="btn btn-attack" style="flex:1;" onclick="document.getElementById('playerInfoModal').style.display='none';netShowCreateForm()"><span class="icn"></span>创建房间</button>
       <button class="btn" style="flex:1;" onclick="document.getElementById('playerInfoModal').style.display='none';netShowJoinForm()"><span class="icn"></span>加入房间</button>
@@ -44,7 +42,7 @@ window.netOpenRoomEntry = async function () {
   if (!u) { netShowAuthModal(netShowRoomEntryForm); return; }
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">房间</h3>
-    <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间或输入房间码加入</p>
+    <p style="color:#6b6357;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">创建房间或输入房间码加入</p>
     <div class="btn-group" style="justify-content:center;gap:10px;">
       <button class="btn btn-attack" style="flex:1;" onclick="document.getElementById('playerInfoModal').style.display='none';netOpenCreate()"><span class="icn"></span>创建房间</button>
       <button class="btn" style="flex:1;" onclick="document.getElementById('playerInfoModal').style.display='none';netOpenJoin()"><span class="icn"></span>加入房间</button>
@@ -55,12 +53,10 @@ window.netOpenRoomEntry = async function () {
 };
 
 function netShowJoinForm() {
-  const nick = localStorage.getItem('qQiNick') || '玩家';
   document.getElementById('playerInfoContent').innerHTML = `
     <h3 style="color:var(--gold);text-align:center;">加入联机房间</h3>
-    <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">输入昵称与房间码</p>
-    <input id="netNickInput" type="text" maxlength="12" value="${nick}" placeholder="昵称" style="width:100%;padding:10px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1em;text-align:center;box-sizing:border-box;margin-bottom:8px;">
-    <input id="netCodeInput" type="text" maxlength="6" placeholder="房间码（4 位）" style="width:100%;padding:10px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1.1em;text-align:center;letter-spacing:4px;text-transform:uppercase;box-sizing:border-box;">
+    <p style="color:#6b6357;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">输入 4 位房间码</p>
+    <input id="netCodeInput" type="text" maxlength="6" placeholder="房间码（4 位）" style="width:100%;padding:10px;background:#fffdf7;color:#2a2520;border:1px solid #d6cdb8;border-radius:8px;font-size:1.1em;text-align:center;letter-spacing:4px;text-transform:uppercase;box-sizing:border-box;">
     <div class="btn-group" style="justify-content:center;margin-top:14px;">
       <button class="btn btn-attack" onclick="netDoJoin()"><span class="icn"></span>加入</button>
       <button class="btn" onclick="document.getElementById('playerInfoModal').style.display='none'"><span class="icn"></span>取消</button>
@@ -79,10 +75,9 @@ window.netOpenJoin = async function () {
 };
 
 window.netDoCreate = async function () {
-  const nickEl = document.getElementById('netNickInput');
-  const nick = nickEl && nickEl.value.trim();
-  if (!nick) { showToast('提示', '请输入昵称', 'error'); return; }
-  localStorage.setItem('qQiNick', nick);
+  const u = await netGetAuthUser(true);
+  if (!u) { netShowAuthModal(function () { netDoCreate(); }); return; }
+  if (u.nickname) localStorage.setItem('qQiNick', u.nickname);
   document.getElementById('playerInfoModal').style.display = 'none';
   try {
     await netHostCreateRoom();
@@ -94,13 +89,12 @@ window.netDoCreate = async function () {
 };
 
 window.netDoJoin = async function () {
-  const nickEl = document.getElementById('netNickInput');
   const codeEl = document.getElementById('netCodeInput');
-  const nick = nickEl && nickEl.value.trim();
   const code = codeEl && codeEl.value.trim().toUpperCase();
-  if (!nick) { showToast('提示', '请输入昵称', 'error'); return; }
   if (!code || code.length < 4 || code.length > 6) { showToast('提示', '请输入正确的 4 位房间码', 'error'); return; }
-  localStorage.setItem('qQiNick', nick);
+  const u = await netGetAuthUser(true);
+  if (!u) { netShowAuthModal(function () { netDoJoin(); }); return; }
+  if (u.nickname) localStorage.setItem('qQiNick', u.nickname);
   document.getElementById('playerInfoModal').style.display = 'none';
   try {
     await netGuestJoinRoom(code);
@@ -124,7 +118,11 @@ window.netLeaveClick = async function () {
     const tip = netRoom.started
       ? '你是房主，离开将解散整个房间，所有玩家都会被移出并结束对局。\n\n确定要离开吗？'
       : '你是房主，离开将解散整个房间，其他玩家都会被移出。\n\n确定要离开吗？';
-    if (!confirm(tip)) return;
+    netShowConfirm('解散房间', tip, async function () {
+      await netLeaveRoom();
+      switchView('mainMenu');
+    });
+    return;
   }
   await netLeaveRoom();
   switchView('mainMenu');

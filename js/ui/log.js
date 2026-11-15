@@ -14,7 +14,7 @@ function showFullLogModal() {
       if (!c) return;
       if (state.fullLogHistory.length === 0) { c.innerHTML = '<div style="text-align:center;color:#888;">暂无战斗日志</div>'; } else {
         c.innerHTML = state.fullLogHistory.map(l =>
-          `<div style="padding:4px 0;border-bottom:1px solid #2a1a10;"><span style="color:#6a5a40;font-size:0.8em;">[${l.time}]</span> ${l.msg}</div>`
+          `<div style="padding:4px 0;border-bottom:1px solid #faf6ec;"><span style="color:#9a9080;font-size:0.8em;">[${l.time}]</span> ${l.msg}</div>`
           ).join('');
       }
       document.getElementById('fullLogModal').style.display = 'flex';

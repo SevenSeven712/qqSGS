@@ -12,7 +12,7 @@ function showBombOverlay(targetIdx, callback) {
       const hasGolden = player.hand.some(c => c.type === CARD_TYPES.GOLDEN);
       if (isLocal(targetIdx) && hasGolden) {
         goldenBtn =
-          `<button class="btn" id="bombGoldenBtn" style="background:#ffd700;color:#5a3a00;margin-top:20px;font-size:1.2em;padding:12px 24px;">用金蝉护法</button>`;
+          `<button class="btn" id="bombGoldenBtn" style="background:#b3362b;color:#fdf6e8;margin-top:20px;font-size:1.2em;padding:12px 24px;">用金蝉护法</button>`;
       }
       overlay.innerHTML = `
           <div class="bomb-card-display">炸</div>
@@ -31,7 +31,7 @@ function showBombOverlay(targetIdx, callback) {
           if (gi >= 0) {
             player.hand.splice(gi, 1);
             addLog(`【护】 ${player.name}打出【金蝉护法】免疫【炸弹】！`);
-            floatText(`player-${targetIdx}`, '', '#ffd700');
+            floatText(`player-${targetIdx}`, '', '#b3362b');
           }
           hideBombOverlay();
           showGoldenEffect(targetIdx);
@@ -76,7 +76,7 @@ function showLockJudge(targetIdx, isTargetLocal) {
       overlay.className = 'bomb-overlay';
       overlay.style.background = 'rgba(20,20,40,0.9)';
       overlay.innerHTML = `
-          <div class="bomb-card-display" style="color:#aa88ff;text-shadow:0 0 30px #aa88ff,0 0 60px #aa66ff;">锁</div>
+          <div class="bomb-card-display" style="color:#aa88ff;text-shadow:0 0 30px #aa88ff,0 0 60px #6a4a9a;">锁</div>
           <div class="bomb-text">锁定判定</div>
           <div class="bomb-target-name">${player.name}</div>
         `;
@@ -269,7 +269,7 @@ function showGoldenEffect(fi) {
           sp.style.cssText = `
               position:absolute;
               width:${size}px; height:${size}px;
-              background:radial-gradient(circle,#fff8c0 0%,#ffd700 40%,rgba(255,200,60,0) 70%);
+              background:radial-gradient(circle,#fdf6e8 0%,#b3362b 40%,rgba(255,200,60,0) 70%);
               border-radius:50%;
               left:calc(50% - ${size/2}px); top:calc(50% - ${size/2}px);
               pointer-events:none;
@@ -302,8 +302,8 @@ function showGoldenEffect(fi) {
               position:absolute;
               left:calc(50% - 5px); top:calc(50% - 5px);
               font-size:${1.2+Math.random()*1.5}em;
-              color:#ffd700;
-              text-shadow:0 0 15px #ffaa00, 0 0 30px #ff8800;
+              color:#b3362b;
+              text-shadow:0 0 15px #b3362b, 0 0 30px #8a6f3e;
               pointer-events:none;
               animation:starBurst gs-star-${i} 1.4s ease-out forwards;
             `;
@@ -367,7 +367,7 @@ function floatText(id, tx, co) {
         textShadow = '0 0 15px #00ff00, 0 0 30px rgba(0,255,0,0.6), 0 2px 4px rgba(0,0,0,0.8)';
       } else if (tx.includes('杀') || tx.includes('闪')) {
         fontSize = '1.6em';
-        border = '2px solid #ffcc00';
+        border = '2px solid #b3362b';
         textShadow = '0 0 12px rgba(255,204,0,0.8), 0 2px 4px rgba(0,0,0,0.8)';
       }
       d.style.cssText =
@@ -384,7 +384,7 @@ function animateCard(fi, ti, nm) {
       const r1 = f.getBoundingClientRect();
       const c = document.createElement('div');
       c.className = 'card';
-      let cardBg = '#2a1a10';
+      let cardBg = '#faf6ec';
       let cardBorder = '2px solid var(--gold)';
       let cardColor = 'var(--gold-light)';
       if (nm === '杀') { cardBg = 'linear-gradient(180deg,#4a1a1a 0%,#2a0a0a 100%)';

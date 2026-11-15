@@ -19,7 +19,7 @@ function aiRespondKill(ti, fi) {
           if (gi >= 0) {
             p.hand.splice(gi, 1);
             addLog(`【护】 ${p.name}打出【金蝉护法】免疫！`);
-            floatText(`player-${ti}`, '', '#ffd700');
+            floatText(`player-${ti}`, '', '#b3362b');
             showGoldenEffect(ti);
             refreshUI();
             return;
@@ -102,7 +102,7 @@ async function aiTakeTurn() {
       if (!cur || cur.hp <= 0) { endTurn(); return; }
       if (cur.locked) {
         addLog(`【锁】 ${cur.name}被锁定，回合跳过`);
-        floatText(`player-${state.currentIdx}`, '锁定', '#aa66ff');
+        floatText(`player-${state.currentIdx}`, '锁定', '#6a4a9a');
         cur.locked = false;
         endTurn();
         return;

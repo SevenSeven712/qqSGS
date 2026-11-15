@@ -10,7 +10,7 @@
 }
 
 .modal-panel {
-  background: linear-gradient(180deg, #2a1a10 0%, #1a1008 100%);
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel) 100%);
   border: 2px solid var(--gold);
   border-radius: 12px; padding: 25px;
   min-width: 400px; max-width: 90%;
@@ -26,7 +26,7 @@
 }
 
 .modal {
-  background: linear-gradient(160deg, #2a1a10 0%, #150a04 100%);
+  background: linear-gradient(160deg, var(--panel) 0%, var(--panel-light) 100%);
   border: 1px solid var(--gold);
   border-radius: 18px; padding: 22px;
   max-width: 480px; width: 92%; text-align: center;
@@ -79,7 +79,7 @@
 }
 
 .toast-box {
-  background: linear-gradient(160deg, #2a1a10 0%, #150a04 100%);
+  background: linear-gradient(160deg, var(--panel) 0%, var(--panel-light) 100%);
   border: 1px solid var(--gold);
   border-radius: 18px; padding: 24px 30px;
   max-width: 340px; width: 90%; text-align: center;
@@ -95,8 +95,8 @@
 
 .toast-btn {
   margin-top: 18px; padding: 10px 34px;
-  background: linear-gradient(180deg, var(--gold), #a08030);
-  color: #1a1205; border: none; border-radius: 25px;
+  background: linear-gradient(180deg, var(--gold), #8a6f3e);
+  color: var(--text); border: none; border-radius: 25px;
   font-weight: bold; cursor: pointer;
   font-family: inherit; transition: 0.2s;
   font-size: 0.95em; letter-spacing: 2px;
@@ -104,7 +104,7 @@
 }
 
 .toast-btn:hover {
-  background: linear-gradient(180deg, #f5d97a, #c9a850);
+  background: linear-gradient(180deg, #c9453a, var(--gold));
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(212, 175, 55, 0.6);
 }
@@ -181,7 +181,7 @@
 .warrior {
   position: absolute; top: 50%;
   font-size: 5em; font-weight: bold;
-  text-shadow: 0 0 20px rgba(255, 80, 0, 0.8), 3px 3px 0 #1a0808;
+  text-shadow: 0 0 20px rgba(255, 80, 0, 0.8), 3px 3px 0 rgba(60,48,32,0.35);
 }
 
 .warrior-left {
@@ -198,7 +198,7 @@
 
 .charge-dust {
   position: absolute; width: 20px; height: 20px;
-  background: radial-gradient(circle, #c8a080 0%, transparent 70%);
+  background: radial-gradient(circle, #8a7a5e 0%, transparent 70%);
   border-radius: 50%; pointer-events: none;
 }
 
@@ -229,7 +229,7 @@
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   font-size: 3.5em; font-weight: bold; color: #88ccff;
-  text-shadow: 0 0 20px #4a90c8, 0 0 40px #2a6aaa, 4px 4px 0 #081018;
+  text-shadow: 0 0 20px #4a90c8, 0 0 40px #2a6aaa, 4px 4px 0 rgba(60,48,32,0.35);
   letter-spacing: 8px; z-index: 10;
   animation: aoeTitlePop 2s ease forwards;
 }
@@ -237,7 +237,7 @@
 .arrow-item {
   position: absolute; top: -100px;
   font-size: 2.2em; color: #c8d0e0;
-  text-shadow: 0 0 8px #88aaff, 1px 1px 0 #1a1a2a;
+  text-shadow: 0 0 8px #88aaff, 1px 1px 0 rgba(60,48,32,0.35);
   transform: rotate(45deg);
   animation: arrowFall linear forwards;
 }
@@ -258,11 +258,11 @@
 .golden-card {
   position: absolute; top: 50%; left: 50%;
   width: 90px; height: 126px;
-  background: linear-gradient(180deg, #4a3a1a 0%, #2a1a08 100%);
-  border: 3px solid #b89040;
+  background: linear-gradient(180deg, #b3362b 0%, #8a6f3e 100%);
+  border: 3px solid #8a6f3e;
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.6em; color: #e8c060; font-weight: bold;
+  font-size: 1.6em; color: #8a6f3e; font-weight: bold;
   box-shadow: 0 0 20px rgba(200, 150, 60, 0.4);
   transform: translate(-50%, -50%) scale(0.3);
   opacity: 0;
@@ -271,14 +271,14 @@
 
 .golden-spark {
   position: absolute; width: 8px; height: 8px;
-  background: radial-gradient(circle, #fff8c0 0%, #ffd700 50%, transparent 80%);
+  background: radial-gradient(circle, #fdf6e8 0%, #b3362b 50%, transparent 80%);
   border-radius: 50%; pointer-events: none;
   animation: goldenSpark 1.5s ease-out forwards;
 }
 
 .golden-ring {
   position: absolute; top: 50%; left: 50%;
-  border: 3px solid #ffd700; border-radius: 50%;
+  border: 3px solid #b3362b; border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: goldenRingExpand 2s ease-out forwards;
   animation-delay: 0.8s;
@@ -287,8 +287,8 @@
 .golden-text-shield {
   position: absolute; top: calc(50% + 110px); left: 50%;
   transform: translate(-50%, 0);
-  font-size: 1.4em; font-weight: bold; color: #ffd700;
-  text-shadow: 0 0 15px #ffaa00, 2px 2px 0 #2a1a08;
+  font-size: 1.4em; font-weight: bold; color: #b3362b;
+  text-shadow: 0 0 15px #b3362b, 2px 2px 0 #8a7a5e;
   letter-spacing: 4px;
   animation: goldenShieldText 1.8s ease forwards;
   animation-delay: 0.8s; opacity: 0;
@@ -303,10 +303,107 @@
 .harvest-title {
   position: absolute; top: 35%; left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 3em; font-weight: bold; color: #ffdd88;
-  text-shadow: 0 0 20px #ffaa40, 0 0 40px #cc8820, 3px 3px 0 #2a1a08;
+  font-size: 3em; font-weight: bold; color: #b3362b;
+  text-shadow: 0 0 20px #b3362b, 0 0 40px #8a6f3e, 3px 3px 0 #8a7a5e;
   letter-spacing: 8px;
   animation: aoeTitlePop 2s ease forwards;
 }
 
 .harvest-grain { position: absolute; font-size: 1.6em; animation: grainFall 2s ease-in forwards; }
+
+/* ============================================================
+ * 宣纸水墨主题覆盖层（overlays / 弹窗面板）
+ * 特效类（炸弹、爆炸、金蝉、万箭）保留原有冲击力
+ * ============================================================ */
+
+.modal-overlay {
+  background: rgba(40, 32, 22, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+/* 关键弹窗强制置顶，防止被 chat-fab 或其他层遮挡 */
+#playerInfoModal,
+#resultModal,
+#detailModal,
+#toastModal,
+#fullLogModal,
+#inviteModal,
+#nextRoundModal,
+#debugModal,
+#offlineModal {
+  z-index: 99995 !important;
+}
+.modal-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.85) inset, 0 12px 40px rgba(60,48,32,0.22);
+}
+.modal {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.85) inset, 0 12px 40px rgba(60,48,32,0.22);
+}
+.modal::before { content: none; }
+.modal h3 {
+  color: var(--text);
+  font-family: 'STKaiti','KaiTi','Songti SC',serif;
+  letter-spacing: 3px;
+}
+.modal h4 { color: var(--text); }
+.modal p { color: var(--text-muted); }
+
+.toast-overlay { background: rgba(40, 32, 22, 0.38); }
+.toast-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.85) inset, 0 10px 32px rgba(60,48,32,0.20);
+}
+.toast-title {
+  color: var(--text);
+  font-family: 'STKaiti','KaiTi','Songti SC',serif;
+  letter-spacing: 2px;
+}
+.toast-message { color: var(--text-muted); }
+.toast-icon { color: var(--text-muted); }
+.toast-success .toast-icon { color: #5a7d52; text-shadow: none; }
+.toast-error .toast-icon { color: var(--red); text-shadow: none; }
+.toast-info .toast-icon { color: #4a6c8c; text-shadow: none; }
+.toast-btn {
+  background: var(--red);
+  color: #fdf6e8;
+  box-shadow: none;
+  border-radius: var(--radius-sm);
+  letter-spacing: 2px;
+}
+.toast-btn:hover {
+  background: var(--red-light);
+  box-shadow: 0 2px 8px rgba(179,54,43,0.24);
+  transform: none;
+}
+
+.big-result { letter-spacing: 6px; }
+.big-result.win {
+  color: #4a6b44;
+  background: rgba(90,125,82,0.08);
+  border: 1px solid #b8cdb0;
+  text-shadow: none;
+}
+.big-result.lose {
+  color: var(--red);
+  background: rgba(179,54,43,0.06);
+  border: 1px solid rgba(179,54,43,0.30);
+  text-shadow: none;
+}
+
+/* 手牌弃置卡片（modal 内） */
+#discardArea {
+  background: var(--panel-light) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+#discardHint { color: var(--red) !important; }
+#discardCount { color: var(--text-muted) !important; }

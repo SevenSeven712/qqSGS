@@ -199,7 +199,7 @@
         var p = state.players[pi2];
         if (!p.hand || p.hand.length === 0) { list.innerHTML = '<div style="color:#888;">（空）</div>'; return; }
         list.innerHTML = p.hand.map(function(c, i) {
-          return '<span style="display:inline-block;margin:2px 4px;padding:3px 8px;background:#2a1a10;border:1px solid #4a3020;border-radius:4px;color:#ffcc88;">[' +
+          return '<span style="display:inline-block;margin:2px 4px;padding:3px 8px;background:#faf6ec;border:1px solid #d6cdb8;border-radius:4px;color:#b3362b;">[' +
             i + '] ' + (c.name || c.type || '牌') + '</span>';
         }).join('');
       }

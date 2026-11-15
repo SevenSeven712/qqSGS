@@ -109,8 +109,8 @@ window.showEditNicknameModal = function() {
       const nick = localStorage.getItem('qQiNick') || '玩家';
       document.getElementById('playerInfoContent').innerHTML = `
           <h3 style="color:var(--gold);text-align:center;">修改昵称</h3>
-          <p style="color:#b8a080;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">当前昵称：<b style="color:#ffe9b5;">${nick}</b></p>
-          <input type="text" id="editNickInput" value="${nick}" maxlength="12" style="width:100%;padding:10px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1em;text-align:center;box-sizing:border-box;" placeholder="请输入新昵称">
+          <p style="color:#6b6357;font-size:0.85em;text-align:center;margin:10px 0 14px 0;">当前昵称：<b style="color:var(--text);">${nick}</b></p>
+          <input type="text" id="editNickInput" value="${nick}" maxlength="12" style="width:100%;padding:10px;background:#fffdf7;color:#2a2520;border:1px solid #d6cdb8;border-radius:8px;font-size:1em;text-align:center;box-sizing:border-box;" placeholder="请输入新昵称">
           <div class="btn-group" style="justify-content:center;margin-top:14px;">
             <button class="btn" onclick="confirmEditNickname()"><span class="icn"></span>确认修改</button>
             <button class="btn btn-close-icon" onclick="document.getElementById('playerInfoModal').style.display='none'"><span class="icn"></span>取消</button>
@@ -162,12 +162,12 @@ function createDebugPwdModal() {
       div.innerHTML = `
           <div class="modal" style="max-width:320px;text-align:center;">
             <h3 style="color:var(--gold);margin:0 0 16px 0;">调试密码</h3>
-            <p style="color:#b8a080;font-size:0.9em;margin-bottom:16px;">请输入调试密码</p>
+            <p style="color:#6b6357;font-size:0.9em;margin-bottom:16px;">请输入调试密码</p>
             <div style="position:relative;margin-bottom:16px;">
-              <input type="password" id="debugPwdInput" maxlength="20" style="width:100%;padding:12px 40px 12px 12px;background:#1a1008;color:#ffdd88;border:1px solid #4a3020;border-radius:8px;font-size:1em;box-sizing:border-box;" placeholder="请输入密码">
+              <input type="password" id="debugPwdInput" maxlength="20" style="width:100%;padding:12px 40px 12px 12px;background:#fffdf7;color:#2a2520;border:1px solid #d6cdb8;border-radius:8px;font-size:1em;box-sizing:border-box;" placeholder="请输入密码">
               <button onclick="toggleDebugPwdVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;font-size:1.1em;padding:4px;">${svgIcon('eye')}</button>
             </div>
-            <div id="debugPwdError" style="color:#f44336;font-size:0.85em;margin-bottom:12px;display:none;"></div>
+            <div id="debugPwdError" style="color:#b3362b;font-size:0.85em;margin-bottom:12px;display:none;"></div>
             <div style="display:flex;gap:8px;justify-content:center;">
               <button class="btn" onclick="confirmDebugPassword()" style="flex:1;"><span class="icn"></span>确认</button>
               <button class="btn btn-close-icon" onclick="closeDebugPwdModal()" style="flex:1;"><span class="icn"></span>取消</button>

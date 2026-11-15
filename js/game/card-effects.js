@@ -11,7 +11,7 @@ function showProbeModal(fi, ti) {
           <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0;">
             ${t.hand.map((c,i)=>`<div class="card" style="cursor:pointer;" onclick="probeSelectCard(${ti},${i})"><span>${c.suit}</span> ${c.name}</div>`).join('')}
           </div>
-          <p style="font-size:0.85em;color:#b8a080;">选择1张牌进行交换（需丢弃2张手牌）</p>
+          <p style="font-size:0.85em;color:#6b6357;">选择1张牌进行交换（需丢弃2张手牌）</p>
           <button class="btn" onclick="document.getElementById('playerInfoModal').style.display='none'">取消</button>
         `;
       document.getElementById('playerInfoContent').innerHTML = content;
@@ -123,7 +123,7 @@ window.borrowChooseDiscard = function(ti) {
           state.discard.push(discarded);
           t.equip[slot] = null;
           addLog(`  ${t.name}丢弃了装备【${discarded.name}】`);
-          floatText(`player-${ti}`, `-${discarded.name}`, '#ff6644');
+          floatText(`player-${ti}`, `-${discarded.name}`, '#b3362b');
           refreshUI();
           return;
         }
@@ -169,7 +169,7 @@ function processTransfer(startIdx) {
       state.pending = { type: 'transfer', targets: orderedTargets, currentIdx: 0, originalIdx: startIdx };
       state.currentIdx = orderedTargets[0];
       addLog(`  【炸】 炸弹传递给${state.players[orderedTargets[0]].name}！`);
-      floatText(`player-${orderedTargets[0]}`, '炸弹', '#ff6644');
+      floatText(`player-${orderedTargets[0]}`, '炸弹', '#b3362b');
       doTransferJudge();
     }
 
@@ -193,7 +193,7 @@ function doTransferJudge() {
         if (goldenIdx >= 0) {
           currentPlayer.hand.splice(goldenIdx, 1);
           addLog(`【护】 ${currentPlayer.name}打出【金蝉护法】免疫【炸弹】！`);
-          floatText(`player-${state.currentIdx}`, '', '#ffd700');
+          floatText(`player-${state.currentIdx}`, '', '#b3362b');
           showGoldenEffect(state.currentIdx);
           if (state.pending.originalIdx !== undefined) state.currentIdx = state.pending.originalIdx;
           state.pending = null;
@@ -244,7 +244,7 @@ function doTransferJudge() {
               } else {
                 state.currentIdx = state.pending.targets[state.pending.currentIdx];
                 addLog(`  【炸】 炸弹传递给${state.players[state.currentIdx].name}！`);
-                floatText(`player-${state.currentIdx}`, '炸弹', '#ff6644');
+                floatText(`player-${state.currentIdx}`, '炸弹', '#b3362b');
                 hideBombOverlay();
                 setTimeout(() => doTransferJudge(), 800);
               }
@@ -262,7 +262,7 @@ function doTransferJudge() {
             } else {
               state.currentIdx = state.pending.targets[state.pending.currentIdx];
               addLog(`  【炸】 炸弹传递给${state.players[state.currentIdx].name}！`);
-              floatText(`player-${state.currentIdx}`, '炸弹', '#ff6644');
+              floatText(`player-${state.currentIdx}`, '炸弹', '#b3362b');
               hideBombOverlay();
               setTimeout(() => doTransferJudge(), 800);
             }

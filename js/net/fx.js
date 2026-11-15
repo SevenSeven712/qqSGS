@@ -59,7 +59,7 @@ function netReplayLockResult(data) {
   const overlay = document.createElement('div');
   overlay.className = 'bomb-overlay';
   overlay.style.background = 'rgba(20,20,40,0.9)';
-  overlay.innerHTML = '<div class="bomb-card-display" style="color:#aa88ff;text-shadow:0 0 30px #aa88ff,0 0 60px #aa66ff;">锁</div>' +
+  overlay.innerHTML = '<div class="bomb-card-display" style="color:#aa88ff;text-shadow:0 0 30px #aa88ff,0 0 60px #6a4a9a;">锁</div>' +
     '<div class="bomb-text">' + name + ' 锁定判定</div>';
   document.body.appendChild(overlay);
   setTimeout(function () {

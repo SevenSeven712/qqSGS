@@ -11,7 +11,7 @@
 .net-card {
   width: 100%;
   max-width: 460px;
-  background: linear-gradient(160deg, #2a1a10 0%, #150a04 100%);
+  background: linear-gradient(160deg, var(--panel) 0%, var(--panel-light) 100%);
   border: 1px solid var(--gold);
   border-radius: 18px;
   padding: 22px;
@@ -40,14 +40,14 @@
 }
 
 .net-code b {
-  color: #ffd700;
+  color: #b3362b;
   font-size: 1.5em;
   letter-spacing: 6px;
-  text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+  text-shadow: 0 0 12px rgba(179,54,43,0.30);
 }
 
 .net-members {
-  background: #1a1008;
+  background: var(--panel);
   border: 1px solid #4a3020;
   border-radius: 10px;
   padding: 10px;
@@ -80,7 +80,7 @@
 
 .net-member.is-host .tag {
   background: linear-gradient(180deg, #c9a050, #8a6020);
-  color: #1a1205;
+  color: var(--text);
   font-weight: bold;
 }
 
@@ -150,7 +150,7 @@
   flex-direction: column;
   gap: 3px;
   padding: 10px 8px;
-  background: #2a1a10;
+  background: var(--panel);
   border: 1px solid #4a3020;
   border-radius: 8px;
   color: #b8a080;
@@ -166,10 +166,10 @@
   transform: translateY(-1px);
 }
 .net-mode-btn.active {
-  border-color: #ffd700;
+  border-color: #b3362b;
   background: linear-gradient(180deg, #6a4a2a, #3a2418);
-  color: #fff5d0;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+  color: #2a2520;
+  box-shadow: 0 0 12px rgba(179,54,43,0.20);
 }
 .net-mode-btn:disabled {
   cursor: not-allowed;
@@ -188,3 +188,80 @@
   font-size: 0.72em;
   opacity: 0.85;
 }
+
+/* ============================================================
+ * 宣纸水墨主题覆盖层（net / 联机房间）
+ * ============================================================ */
+
+.net-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.85) inset, 0 4px 18px rgba(90,74,46,0.10);
+}
+.net-header { border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.net-header h3 {
+  color: var(--text);
+  font-family: 'STKaiti','KaiTi','Songti SC',serif;
+  letter-spacing: 4px;
+}
+.net-code { color: var(--text-muted); }
+.net-code b {
+  color: var(--red);
+  text-shadow: none;
+  letter-spacing: 8px;
+  font-family: 'Courier New', monospace;
+}
+.net-members {
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.net-member {
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.net-member:last-child { border-bottom: none; }
+.net-member .tag {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  border-radius: 2px;
+}
+.net-member.is-host .tag {
+  background: var(--red);
+  color: #fdf6e8;
+  border-color: var(--red);
+}
+.net-member .name { color: var(--text); }
+.net-empty { color: var(--text-muted); }
+
+.net-mode-section {
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.net-mode-title { color: var(--text); letter-spacing: 2px; }
+.net-mode-hint { color: var(--text-muted); }
+.net-mode-btn {
+  background: var(--panel);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+.net-mode-btn:hover:not(:disabled) {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(179,54,43,0.04);
+  transform: none;
+}
+.net-mode-btn.active {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fdf6e8;
+  box-shadow: none;
+}
+.net-mode-btn.active:disabled { opacity: 1; }
+.net-mode-btn .nm-name { font-weight: 600; font-family: 'STKaiti','KaiTi','Songti SC',serif; letter-spacing: 2px; }
+
+#netWaitHint { color: var(--text-muted); }

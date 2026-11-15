@@ -11,7 +11,7 @@ function showResponsePanel() {
       const hasDodge = cur.hand.some(c => c.type === CARD_TYPES.DODGE);
       const hasKill = cur.hand.some(c => c.type === CARD_TYPES.KILL);
       const hasGolden = cur.hand.some(c => c.type === CARD_TYPES.GOLDEN) && !cur.goldenShield;
-      const goldenBtn = hasGolden ? `<button class="btn" style="background:#ffd700;color:#5a3a00;" id="respGolden"><span class="icn"></span>用金蝉护法</button> ` :
+      const goldenBtn = hasGolden ? `<button class="btn" style="background:#b3362b;color:#fdf6e8;" id="respGolden"><span class="icn"></span>用金蝉护法</button> ` :
         '';
       const pendingType = state.pending.type;
       let autoAction = null;
@@ -69,7 +69,7 @@ function respondPending(ch) {
           const isAoe = state.pending.type === CARD_TYPES.SOUTH || state.pending.type === CARD_TYPES.ARROWS;
           const delay = isAoe ? 2500 : 0;
           setTimeout(() => {
-            floatText(`player-${state.currentIdx}`, '', '#ffd700');
+            floatText(`player-${state.currentIdx}`, '', '#b3362b');
             showGoldenEffect(state.currentIdx);
           }, delay);
         }
@@ -189,7 +189,7 @@ function advanceTurn() {
       const cur = getCur();
       if (cur.locked) {
         addLog(`【锁】 ${cur.name}被锁定，回合跳过`);
-        floatText(`player-${state.currentIdx}`, '锁定', '#aa66ff');
+        floatText(`player-${state.currentIdx}`, '锁定', '#6a4a9a');
         cur.locked = false;
         state.phase = 'endTurn';
         refreshUI();
@@ -239,7 +239,7 @@ function showNextRoundPrompt() {
         nextRoundBtns.style.display = 'none';
         discardArea.style.display = 'block';
         document.getElementById('discardCards').innerHTML = localPlayer.hand.map((card, idx) => {
-          return `<div onclick="toggleDiscardCard(${idx})" id="dcard-${idx}" style="width:62px;height:88px;background:linear-gradient(145deg,#3a2a1a,#2a1a10);border:2px solid #5a4030;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;font-size:0.72em;color:#ddd;transition:all 0.15s;user-select:none;"><div style="line-height:1.3;"><div style="color:#ffcc66;font-size:1.1em;">${card.name}</div><div style="color:#886644;font-size:0.85em;margin-top:3px;">${card.suit||''}</div></div></div>`;
+          return `<div onclick="toggleDiscardCard(${idx})" id="dcard-${idx}" style="width:62px;height:88px;background:linear-gradient(145deg,#f6f0e2,#faf6ec);border:2px solid #d6cdb8;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;font-size:0.72em;color:#ddd;transition:all 0.15s;user-select:none;"><div style="line-height:1.3;"><div style="color:#b3362b;font-size:1.1em;">${card.name}</div><div style="color:#8a6f3e;font-size:0.85em;margin-top:3px;">${card.suit||''}</div></div></div>`;
         }).join('');
         document.getElementById('discardHint').textContent =
           `手牌 ${localPlayer.hand.length} 张 > 血量上限 ${maxCards} 张，需丢弃 ${needDiscard} 张`;
@@ -266,7 +266,7 @@ window.startTurn = function() {
       }
       if (cur.locked) {
         addLog(`【锁】 ${cur.name}被锁定，回合跳过`);
-        floatText(`player-${state.currentIdx}`, '锁定', '#aa66ff');
+        floatText(`player-${state.currentIdx}`, '锁定', '#6a4a9a');
         cur.locked = false;
         state.phase = 'endTurn';
         refreshUI();

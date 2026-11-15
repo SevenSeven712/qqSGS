@@ -434,9 +434,9 @@ const SKILLS = {
     }
     document.getElementById('playerInfoContent').innerHTML = `
         <h3 style="color:${rc};">${gIcon(cur.general)} ${cur.general.name}</h3>
-        <div style="background:#2a1a10;padding:10px;border-radius:12px;margin-bottom:10px;">
+        <div style="background:#faf6ec;padding:10px;border-radius:12px;margin-bottom:10px;">
           <p><b>技能：</b>${cur.general.skill}</p>
-          <p style="color:#b8a080;">${skillDesc}</p>
+          <p style="color:#6b6357;">${skillDesc}</p>
         </div>
         ${canUse?`<button class="btn" onclick="${useSkill};document.getElementById('playerInfoModal').style.display='none'">技 · 使用技能</button>`:''}
         <button class="btn" onclick="document.getElementById('playerInfoModal').style.display='none'">关闭</button>

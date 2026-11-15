@@ -15,6 +15,7 @@ const netRoom = {
   guests: [],
   started: false,
   myName: '',
+  myAvatar: '',
   presenceList: [],
   mode: 'chaos',
 };
@@ -114,6 +115,16 @@ async function netJoinRoom(code, role) {
   netRoom.role = role;
   netRoom.clientId = netGenId();
   netRoom.myName = localStorage.getItem('qQiNick') || '玩家';
+  netRoom.myAvatar = '';
+  try {
+    if (typeof netGetAuthUser === 'function') {
+      const u = await netGetAuthUser(true);
+      if (u) {
+        if (u.nickname) { netRoom.myName = u.nickname; try { localStorage.setItem('qQiNick', u.nickname); } catch (e) {} }
+        if (u.avatar_url && /^https?:\/\//.test(u.avatar_url)) netRoom.myAvatar = u.avatar_url;
+      }
+    }
+  } catch (e) {}
   netRoom.presenceList = [];
 
   const ch = sb.channel('qqsg:' + code, {
@@ -132,7 +143,7 @@ async function netJoinRoom(code, role) {
 
   await netSubscribeChannel(ch);
   netRoom.channel = ch;
-  await ch.track({ name: netRoom.myName, seat: role === 'host' ? 0 : -1, role });
+  await ch.track({ name: netRoom.myName, avatar: netRoom.myAvatar || '', seat: role === 'host' ? 0 : -1, role });
 }
 
 async function netHostCreateRoom() {
@@ -171,6 +182,7 @@ async function netGuestJoinRoom(code) {
   await netSend(NET_MSG.HELLO, {
     clientId: netRoom.clientId,
     name: netRoom.myName,
+    avatar: netRoom.myAvatar || '',
     privateTopic,
   });
   netRenderRoomUI();
@@ -244,6 +256,10 @@ async function netOnHello(payload) {
     return;
   }
   let g = netRoom.guests.find(x => x.clientId === payload.clientId);
+  if (g) {
+    if (payload.name) g.name = payload.name;
+    if (payload.avatar !== undefined) g.avatar = payload.avatar || '';
+  }
   if (!g) {
     const used = new Set([0].concat(netRoom.guests.map(x => x.seat)));
     let seat = 1;
@@ -257,6 +273,7 @@ async function netOnHello(payload) {
       clientId: payload.clientId,
       seat,
       name: payload.name || '玩家',
+      avatar: payload.avatar || '',
       privateTopic: payload.privateTopic || null,
       channel: null,
     };
@@ -279,7 +296,7 @@ async function netOnWelcome(payload) {
   state.localIndices = [payload.seat];
   if (payload.mode && NET_MODE_VALID.indexOf(payload.mode) >= 0) netRoom.mode = payload.mode;
   if (netRoom.channel) {
-    await netRoom.channel.track({ name: netRoom.myName, seat: netRoom.seat, role: 'guest' });
+    await netRoom.channel.track({ name: netRoom.myName, avatar: netRoom.myAvatar || '', seat: netRoom.seat, role: 'guest' });
   }
   netRenderRoomUI();
 }

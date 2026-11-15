@@ -47,6 +47,7 @@ async function netStartMatching(mode) {
   netMatch.mode = mode || state.mode || 'chaos';
   netMatch.clientId = netGenId();
   netMatch.nickname = u.nickname || '玩家';
+  netMatch.avatar = (u.avatar_url && /^https?:\/\//.test(u.avatar_url)) ? u.avatar_url : '';
   netMatch.active = true;
   netMatch.invited = false;
   state.mode = netMatch.mode;
@@ -77,7 +78,7 @@ async function netStartMatching(mode) {
   });
   await netSubscribeChannel(ch);
   netMatch.channel = ch;
-  try { await ch.track({ clientId: netMatch.clientId, nickname: netMatch.nickname, mode: netMatch.mode, ts: Date.now() }); } catch (e) {}
+  try { await ch.track({ clientId: netMatch.clientId, nickname: netMatch.nickname, avatar: netMatch.avatar || '', mode: netMatch.mode, ts: Date.now() }); } catch (e) {}
 
   await new Promise(function (r) { setTimeout(r, 350); });
   if (!netMatch.active) return;

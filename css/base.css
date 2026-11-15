@@ -19,42 +19,43 @@
 .avatar-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 :root {
-  --bg: #0a0605;
-  --bg-dark: #050302;
-  --bg-gradient: linear-gradient(180deg, #0a0605 0%, #150a08 40%, #0a0605 100%);
-  --panel: #1a120e;
-  --panel-light: #2a1a10;
-  --gold: #c9a050;
-  --gold-light: #e8d4a8;
-  --gold-bright: #ffd700;
-  --gold-glow: rgba(201, 160, 80, 0.45);
-  --red: #b5302a;
-  --red-light: #d9555a;
-  --red-glow: rgba(181, 48, 42, 0.35);
-  --green: #5cb85c;
-  --blue: #4a90c8;
-  --border: #4a3a20;
-  --border-light: #6a4a30;
-  --text: #e8d5b0;
-  --text-muted: #a08860;
-  --card-bg: #f5f0e8;
-  --highlight: #ffcc00;
-  --ink: #1a1205;
-  --shadow-gold: 0 4px 20px rgba(201, 160, 80, 0.3);
-  --shadow-deep: 0 8px 40px rgba(0, 0, 0, 0.6);
-  --radius-sm: 6px;
-  --radius: 12px;
-  --radius-lg: 18px;
+  /* —— 宣纸水墨色板 —— */
+  --bg: #f2ecdf;              /* 宣纸底 */
+  --bg-dark: #e8e0d0;         /* 略深一档宣纸 */
+  --bg-gradient: linear-gradient(180deg, #f6f2e8 0%, #efe8da 45%, #f4efe4 100%);
+  --panel: #faf6ec;           /* 纸面 */
+  --panel-light: #fdfaf3;
+  --gold: #8a6f3e;            /* 铜褐，代替原金色 */
+  --gold-light: #a8894f;
+  --gold-bright: #a8894f;
+  --gold-glow: rgba(138, 111, 62, 0.25);
+  --red: #b3362b;             /* 朱砂印泥 */
+  --red-light: #c9453a;
+  --red-glow: rgba(179, 54, 43, 0.22);
+  --green: #5a7d52;
+  --blue: #4a6c8c;
+  --border: #d6cdb8;
+  --border-light: #c2b79e;
+  --text: #2a2520;            /* 浓墨 */
+  --text-muted: #6b6357;      /* 淡墨 */
+  --card-bg: #fdfaf3;
+  --highlight: #b3362b;       /* 高亮改朱红 */
+  --ink: #14110d;
+  --shadow-gold: 0 2px 8px rgba(90, 74, 46, 0.14);
+  --shadow-deep: 0 6px 24px rgba(60, 48, 32, 0.18);
+  --radius-sm: 3px;
+  --radius: 4px;
+  --radius-lg: 6px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
   background:
-    radial-gradient(ellipse at 20% 85%, rgba(139, 69, 19, 0.22) 0%, transparent 45%),
-    radial-gradient(ellipse at 80% 90%, rgba(181, 48, 42, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 15% 8%, rgba(140, 120, 90, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 92%, rgba(120, 100, 72, 0.05) 0%, transparent 50%),
     var(--bg-gradient);
-  font-family: 'STSong', 'Songti SC', 'Noto Serif SC', 'KaiTi', 'SimSun', serif;
+  font-family: 'Songti SC', 'STSong', 'Noto Serif SC', 'SimSun', serif;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -70,13 +71,13 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
+  /* 宣纸纤维：细密斜纹 + 偶发斑点 */
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(201, 160, 80, 0.08) 1px, transparent 2px),
-    radial-gradient(circle at 78% 12%, rgba(201, 160, 80, 0.06) 1px, transparent 2px),
-    radial-gradient(circle at 28% 82%, rgba(201, 160, 80, 0.05) 1px, transparent 2px),
-    radial-gradient(circle at 72% 72%, rgba(201, 160, 80, 0.07) 1px, transparent 2px),
-    radial-gradient(circle at 50% 35%, rgba(201, 160, 80, 0.05) 1px, transparent 2px);
-  background-size: 110px 110px, 150px 150px, 130px 130px, 170px 170px, 95px 95px;
+    repeating-linear-gradient(94deg, rgba(150, 132, 100, 0.035) 0px, rgba(150, 132, 100, 0.035) 1px, transparent 1px, transparent 4px),
+    repeating-linear-gradient(4deg, rgba(150, 132, 100, 0.025) 0px, rgba(150, 132, 100, 0.025) 1px, transparent 1px, transparent 6px),
+    radial-gradient(circle at 22% 34%, rgba(120, 100, 70, 0.05) 0.6px, transparent 1.4px),
+    radial-gradient(circle at 68% 78%, rgba(120, 100, 70, 0.045) 0.6px, transparent 1.4px);
+  background-size: auto, auto, 23px 23px, 37px 37px;
   pointer-events: none;
   z-index: 0;
 }
@@ -86,8 +87,8 @@ body::after {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 0%, transparent 30%, rgba(0, 0, 0, 0.35) 100%),
-    radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 40%);
+    radial-gradient(ellipse at 50% 0%, transparent 55%, rgba(90, 74, 46, 0.08) 100%),
+    radial-gradient(ellipse at 50% 100%, rgba(90, 74, 46, 0.10) 0%, transparent 45%);
   pointer-events: none;
   z-index: 0;
 }

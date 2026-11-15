@@ -113,29 +113,14 @@ function setupChatUI() {
       const input = document.getElementById('chatInput');
       const sendBtn = document.getElementById('chatSend');
       if (!fab || !panel) return;
-      if (isTouchDevice()) {
-        fab.onclick = () => { chatOpenByUser = true;
-          openChat(); };
-        if (closeBtn) closeBtn.onclick = closeChat;
-      } else {
-        let hoverTimer = null,
-          leaveTimer = null;
-        const openOnHover = () => { if (leaveTimer) { clearTimeout(leaveTimer);
-            leaveTimer = null; } if (chatOpenByUser) return; if (hoverTimer) return; hoverTimer = setTimeout(() => { if (
-              !chatOpenByUser) openChat();
-            hoverTimer = null; }, 300); };
-        const closeOnLeave = () => { if (hoverTimer) { clearTimeout(hoverTimer);
-            hoverTimer = null; } if (chatOpenByUser) return; if (leaveTimer) return; leaveTimer = setTimeout(() => { if (!
-              chatOpenByUser) closeChat();
-            leaveTimer = null; }, 600); };
-        fab.onmouseenter = openOnHover;
-        fab.onmouseleave = closeOnLeave;
-        panel.onmouseenter = openOnHover;
-        panel.onmouseleave = closeOnLeave;
-        fab.onclick = () => { chatOpenByUser = !panel.classList.contains('open'); if (chatOpenByUser) openChat();
-          else closeChat(); };
-        if (closeBtn) closeBtn.onclick = closeChat;
-      }
+      // 统一逻辑：点击切换开关，不再用 hover 自动开（会和点击冲突）
+      fab.onclick = () => {
+        if (panel.classList.contains('open')) { closeChat(); }
+        else { chatOpenByUser = true; openChat(); }
+      };
+      if (closeBtn) closeBtn.onclick = closeChat;
+      // 鼠标移出面板时不自动关闭（由用户手动点 X 或 FAB）
+      panel.onclick = function (e) { e.stopPropagation(); };
       if (input) {
         input.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault();
             sendChatMessage(); } });

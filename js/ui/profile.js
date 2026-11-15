@@ -80,7 +80,7 @@ function showHistory() {
           const bgColor = isWin ? 'rgba(76,175,80,0.08)' : 'rgba(244,67,54,0.08)';
           const modeName = modeMap[r.mode] || r.mode || '排位';
           h +=
-            `<div style="background:${bgColor};border-radius:8px;padding:10px 12px;margin-bottom:8px;border-left:3px solid ${isWin?'#4caf50':'#f44336'};"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:0.8em;color:#888;">${r.date||'未知时间'}</span><span style="font-size:0.8em;color:#666;">${modeName}</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:1.1em;color:${isWin?'#4caf50':'#f44336'};font-weight:bold;">${isWin?'胜':'败'}</span><span style="color:#c9a050;font-size:0.9em;">${r.score>0?'+'+r.score:r.score}分</span></div></div>`;
+            `<div style="background:${bgColor};border-radius:8px;padding:10px 12px;margin-bottom:8px;border-left:3px solid ${isWin?'#5a7d52':'#b3362b'};"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:0.8em;color:#888;">${r.date||'未知时间'}</span><span style="font-size:0.8em;color:#666;">${modeName}</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:1.1em;color:${isWin?'#5a7d52':'#b3362b'};font-weight:bold;">${isWin?'胜':'败'}</span><span style="color:#8a6f3e;font-size:0.9em;">${r.score>0?'+'+r.score:r.score}分</span></div></div>`;
         });
       }
       document.getElementById('historyContent').innerHTML = h;
@@ -138,6 +138,34 @@ function getRankDescription(rank) {
       };
       return desc[rank] || '';
     }
+
+async function renderProfileHeader() {
+  const avEl = document.getElementById('profileAvatar');
+  const nickEl = document.getElementById('profileNickname');
+  if (!avEl || !nickEl) return;
+  let user = null;
+  try {
+    if (typeof netGetAuthUser === 'function') user = await netGetAuthUser(true);
+  } catch (e) {}
+  if (!user) {
+    avEl.style.backgroundImage = '';
+    avEl.textContent = '?';
+    nickEl.textContent = '未登录';
+    return;
+  }
+  const nick = user.nickname || '玩家';
+  const av = user.avatar_url || '';
+  if (av && /^https?:\/\//.test(av)) {
+    avEl.textContent = '';
+    avEl.style.backgroundImage = 'url("' + av.replace(/"/g, '%22') + '")';
+  } else {
+    avEl.style.backgroundImage = '';
+    avEl.textContent = String(nick).charAt(0).toUpperCase();
+  }
+  nickEl.textContent = nick;
+  // 联机也用社区昵称
+  try { localStorage.setItem('qQiNick', nick); } catch (e) {}
+}
 
 function updateProfileRankDisplay() {
       const rank = getPlayerRank();

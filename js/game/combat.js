@@ -13,7 +13,7 @@ function processAoe(tp, fi) {
       } else {
         showArrowsEffect(fi);
       }
-      floatText(`player-${fi}`, cardName, tp === CARD_TYPES.SOUTH ? '#ff6644' : '#88ccff');
+      floatText(`player-${fi}`, cardName, tp === CARD_TYPES.SOUTH ? '#b3362b' : '#88ccff');
       const goldenPlayers = [];
       state.players.forEach((p, i) => {
         if (i === fi || p.hp <= 0) return;
@@ -91,7 +91,7 @@ function processAoe(tp, fi) {
         setTimeout(() => {
           goldenPlayers.forEach((idx, j) => {
             setTimeout(() => {
-              floatText(`player-${idx}`, '', '#ffd700');
+              floatText(`player-${idx}`, '', '#b3362b');
               showGoldenEffect(idx);
             }, j * 500);
           });
@@ -162,7 +162,7 @@ function showResult(w) {
       const m = document.getElementById('resultModal');
       const c = document.getElementById('resultContent');
       c.innerHTML =
-        `${w?'<div class="big-result win">胜</div>':'<div class="big-result lose">败</div>'}${state.offlineMode?'<div style="color:#b8a080;font-size:0.85em;margin:10px;">（线下模式，不计入战绩与积分）</div>':''}<button class="btn btn-attack" id="btnEndGame">结束游戏</button>`;
+        `${w?'<div class="big-result win">胜</div>':'<div class="big-result lose">败</div>'}${state.offlineMode?'<div style="color:#6b6357;font-size:0.85em;margin:10px;">（线下模式，不计入战绩与积分）</div>':''}<button class="btn btn-attack" id="btnEndGame">结束游戏</button>`;
       m.style.display = 'flex';
       document.getElementById('btnEndGame').onclick = () => { m.style.display = 'none';
         resetGame();

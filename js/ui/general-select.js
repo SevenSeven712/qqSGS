@@ -48,8 +48,8 @@ function startGeneralSelect(isOffline) {
       }
       confirmBtn.onclick = () => {
         const sel = grid.querySelector('.general-card.selected');
-        if (!sel) { alert('请先选择一位武将！'); return; }
-        if (state.takenGenerals.includes(sel.dataset.id)) { alert('此武将已被其他玩家选择！');
+        if (!sel) { showToast('提示', '请先选择一位武将！', 'info'); return; }
+        if (state.takenGenerals.includes(sel.dataset.id)) { showToast('提示', '此武将已被其他玩家选择！', 'info');
           sel.classList.remove('selected'); return; }
         const gen = GENERALS.find(g => g.id === sel.dataset.id);
         state.players[0].general = gen;
@@ -63,7 +63,7 @@ function startGeneralSelect(isOffline) {
         addLog(`【确】 你选择了【${gen.name}】`);
         const waitMsg = document.createElement('div');
         waitMsg.id = 'waitSelectMsg';
-        waitMsg.style.cssText = 'color:#c9a050;text-align:center;margin-top:8px;font-size:0.85em;animation:blink 1.5s infinite;';
+        waitMsg.style.cssText = 'color:#8a6f3e;text-align:center;margin-top:8px;font-size:0.85em;animation:blink 1.5s infinite;';
         waitMsg.textContent = '请等待对方选择...';
         confirmBtn.parentNode.appendChild(waitMsg);
         selectedCount++;
@@ -116,11 +116,11 @@ function showDetail(gid) {
       if (!g) return;
       const factionLabel = { 'classic': '经典', 'student': '学生', 'other': '其他' };
       const skillsHtml = (g.skills && g.skills.length > 0) ? g.skills.map(s =>
-        `<div style="background:#2a1a10;border:1px solid #4a3020;border-radius:8px;padding:10px;margin-bottom:8px;text-align:left;"><div style="color:#ffcc66;font-weight:bold;font-size:0.95em;">${s.type==='active'?svgIcon('bolt'):svgIcon('shield')} ${s.name}</div><div style="color:#b8a080;font-size:0.85em;margin-top:4px;">${s.desc}</div></div>`
+        `<div style="background:#faf6ec;border:1px solid #d6cdb8;border-radius:8px;padding:10px;margin-bottom:8px;text-align:left;"><div style="color:#b3362b;font-weight:bold;font-size:0.95em;">${s.type==='active'?svgIcon('bolt'):svgIcon('shield')} ${s.name}</div><div style="color:#6b6357;font-size:0.85em;margin-top:4px;">${s.desc}</div></div>`
       ).join('') :
         `<div style="color:#7a6550;font-size:0.9em;">暂无详细技能描述</div>`;
       document.getElementById('detailContent').innerHTML =
-        `<div style="text-align:center;"><div style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;width:90px;height:90px;border-radius:50%;margin:0 auto 10px;background:${g.color};border:3px solid var(--gold);font-size:2.4em;">${gIcon(g)}${avatarImg(g)}</div><h3 style="color:#ffd700;margin:6px 0;">${g.name}</h3><div style="display:flex;justify-content:center;gap:15px;margin:8px 0;font-size:0.9em;"><span>${svgIcon('heart')} ${g.hp} 体力</span><span style="color:${g.faction==='student'?'#4a90c8':'#c9a050'};">${svgIcon('flag')} ${factionLabel[g.faction]||'其他'}</span></div><div style="background:#1a120e;border-radius:8px;padding:12px;margin:12px 0;"><div style="color:#c9a050;font-weight:bold;font-size:1em;margin-bottom:6px;">技能 - ${g.skill}</div><div style="color:#b8a080;font-size:0.9em;">${g.desc}</div></div>${skillsHtml}<button class="btn" onclick="document.getElementById('detailModal').style.display='none'" style="margin-top:8px;"><span class="icn"></span>关闭</button></div>`;
+        `<div style="text-align:center;"><div style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;width:90px;height:90px;border-radius:50%;margin:0 auto 10px;background:${g.color};border:3px solid var(--gold);font-size:2.4em;">${gIcon(g)}${avatarImg(g)}</div><h3 style="color:#b3362b;margin:6px 0;">${g.name}</h3><div style="display:flex;justify-content:center;gap:15px;margin:8px 0;font-size:0.9em;"><span>${svgIcon('heart')} ${g.hp} 体力</span><span style="color:${g.faction==='student'?'#4a90c8':'#8a6f3e'};">${svgIcon('flag')} ${factionLabel[g.faction]||'其他'}</span></div><div style="background:#faf6ec;border-radius:8px;padding:12px;margin:12px 0;"><div style="color:#8a6f3e;font-weight:bold;font-size:1em;margin-bottom:6px;">技能 - ${g.skill}</div><div style="color:#6b6357;font-size:0.9em;">${g.desc}</div></div>${skillsHtml}<button class="btn" onclick="document.getElementById('detailModal').style.display='none'" style="margin-top:8px;"><span class="icn"></span>关闭</button></div>`;
       document.getElementById('detailModal').style.display = 'flex';
     }
 
@@ -141,7 +141,7 @@ function showPlayerInfo(playerIdx) {
           <h3 style="color:${rankColor};">${p.rank} ${p.name}</h3>
           <div style="margin:10px 0;">
             ${p.general?`
-              <div style="background:#2a1a10;padding:10px;border-radius:12px;margin-bottom:10px;">
+              <div style="background:#faf6ec;padding:10px;border-radius:12px;margin-bottom:10px;">
                 <div style="position:relative;overflow:hidden;width:60px;height:60px;border-radius:50%;background:${p.general.color};display:flex;align-items:center;justify-content:center;font-size:2em;margin:0 auto 5px;">${gIcon(p.general)}${avatarImg(p.general)}</div>
                 <h4>${p.general.name}</h4>
                 <p><b>技能：</b>${p.general.skill}</p>
