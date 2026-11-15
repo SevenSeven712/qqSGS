@@ -63,11 +63,16 @@ window.showPlayerPopup = function(idx) {
       const rc = RANK_COLORS[p.rank] || '#fff';
       const total = p.wins + p.losses;
       const winRate = total > 0 ? Math.round(p.wins / total * 100) + '%' : '-';
+      
+      const av = (p.avatar && /^https?:\/\//.test(p.avatar)) ? p.avatar : '';
+      const initial = String(p.name || 'U').charAt(0).toUpperCase();
+      
       document.getElementById('playerInfoContent').innerHTML = `
           <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
             <div style="position:relative;">
-              <div style="position:relative;overflow:hidden;width:80px;height:80px;border-radius:50%;background:${p.general.color};display:flex;align-items:center;justify-content:center;font-size:3em;border:3px solid ${rc};box-shadow:0 0 20px ${rc};">
-                ${gIcon(p.general)}${avatarImg(p.general)}
+              <div style="position:relative;overflow:hidden;width:80px;height:80px;border-radius:50%;background:${p.general?p.general.color:'#8a6f3e'};display:flex;align-items:center;justify-content:center;font-size:3em;color:#fff;border:3px solid ${rc};box-shadow:0 0 20px ${rc};">
+                ${initial}
+                ${av ? '<img class="avatar-img" src="' + av.replace(/"/g, '%22') + '" alt="" onerror="this.remove()">' : ''}
               </div>
               <div style="position:absolute;top:-5px;right:-5px;background:${rc};color:#faf6ec;padding:2px 8px;border-radius:12px;font-size:0.75em;font-weight:bold;">
                 ${p.rank}
