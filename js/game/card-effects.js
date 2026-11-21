@@ -216,8 +216,8 @@ function doTransferJudge() {
         showBombResult(judgeSuit, isBlackSpade);
         setTimeout(() => {
           if (isBlackSpade) {
-            const bombTransferred = xiaoxuebaVampire(state.currentIdx);
-            if (!bombTransferred) {
+            const bombImmune = xiaoxuebaImmuneBomb(state.currentIdx);
+            if (!bombImmune) {
               showExplosionEffect(state.currentIdx);
               currentPlayer.hp = Math.max(0, currentPlayer.hp - 3);
               floatText(`player-${state.currentIdx}`, '-3伤害', '#ff4444');
@@ -231,23 +231,15 @@ function doTransferJudge() {
               checkVictory();
               if (!state.gameOver && state.phase === 'play' && !isLocal(state.currentIdx)) scheduleAi();
             } else {
-              addLog(`  ${currentPlayer.name}转移了炸弹！`);
-              state.pending.currentIdx++;
-              if (state.pending.currentIdx >= state.pending.targets.length) {
-                addLog(`  【炸】 炸弹在传递中熄灭，无人受伤`);
-                if (state.pending.originalIdx !== undefined) state.currentIdx = state.pending.originalIdx;
-                state.pending = null;
-                hideBombOverlay();
-                refreshUI();
-                checkVictory();
-                if (!state.gameOver && state.phase === 'play' && !isLocal(state.currentIdx)) scheduleAi();
-              } else {
-                state.currentIdx = state.pending.targets[state.pending.currentIdx];
-                addLog(`  【炸】 炸弹传递给${state.players[state.currentIdx].name}！`);
-                floatText(`player-${state.currentIdx}`, '炸弹', '#b3362b');
-                hideBombOverlay();
-                setTimeout(() => doTransferJudge(), 800);
-              }
+              // 肖学霸免疫：炸弹当场熄灭，全屏广播
+              hideBombOverlay();
+              showBombExtinguishEffect(state.currentIdx);
+              addLog(`  【炸】 炸弹在${currentPlayer.name}处熄灭，无人受伤`);
+              if (state.pending.originalIdx !== undefined) state.currentIdx = state.pending.originalIdx;
+              state.pending = null;
+              refreshUI();
+              checkVictory();
+              if (!state.gameOver && state.phase === 'play' && !isLocal(state.currentIdx)) scheduleAi();
             }
           } else {
             state.pending.currentIdx++;

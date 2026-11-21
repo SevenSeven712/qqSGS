@@ -64,9 +64,10 @@ function useCard(card, fi, ti) {
         if (!removed) {
           addLog(`  场上没有可清除的效果`);
         }
-        if (f.general && f.general.id === 'qiyuyang' && f.hp < f.maxHp) {
+        if (f.general && (f.general.id === 'qiyuyang' || f.general.id === 'wangxiaoxi') && f.hp < f.maxHp) {
           f.hp = Math.min(f.hp + 1, f.maxHp);
-          addLog(`【水龙王】${f.name}使用水回复1点体力`);
+          const waterSkillName = f.general.id === 'qiyuyang' ? '水龙王' : '等我喝完2L雪碧';
+          addLog(`【${waterSkillName}】${f.name}使用水回复1点体力`);
           floatText(`player-${fi}`, '+1', '#66cc66');
         }
         refreshUI();

@@ -69,6 +69,20 @@ function hideBombOverlay() {
       if (overlay) overlay.remove();
     }
 
+function showBombExtinguishEffect(idx) {
+      const p = state.players[idx];
+      const name = p ? p.name : '玩家';
+      const overlay = document.createElement('div');
+      overlay.className = 'bomb-extinguish-overlay';
+      overlay.innerHTML =
+        '<div class="bomb-extinguish-icon">炸</div>' +
+        '<div class="bomb-extinguish-title">炸弹熄灭</div>' +
+        '<div class="bomb-extinguish-name">' + name + ' · 免疫炸弹的攻击</div>' +
+        '<div class="bomb-extinguish-sub">炸弹就此熄灭，无人受伤</div>';
+      document.body.appendChild(overlay);
+      setTimeout(() => overlay.remove(), 2400);
+    }
+
 function showLockJudge(targetIdx, isTargetLocal) {
       const player = state.players[targetIdx];
       const overlay = document.createElement('div');

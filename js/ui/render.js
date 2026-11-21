@@ -204,4 +204,11 @@ function updateButtons() {
       const startBtn = document.getElementById('btnStartTurn');
       if (startBtn) startBtn.style.display = 'none';
       if (endBtn) endBtn.style.display = state.phase === 'play' ? 'inline-flex' : '';
+
+      const skillBtn = document.getElementById('btnSkill');
+      if (skillBtn) {
+        const st = (typeof getMySkillState === 'function') ? getMySkillState() : { canUse: false, reason: '' };
+        skillBtn.disabled = !st.canUse;
+        skillBtn.title = st.reason || '';
+      }
     }

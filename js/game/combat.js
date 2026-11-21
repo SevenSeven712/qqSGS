@@ -195,5 +195,4 @@ function dealDamage(fromIdx, toIdx, cardType) {
       if (t.hp <= 0) eliminate(toIdx);
       fuchenhaoJudge(fromIdx);
       maochenhaoAfterDamage(toIdx);
-      xiaoxuebaCounter(fromIdx, toIdx);
     }

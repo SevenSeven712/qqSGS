@@ -62,8 +62,7 @@
     netGuestSendIntent(NET_INTENT.CONFIRM_NEXT_ROUND, {});
   };
 
-  ['useGuanyuSkill', 'useGuanyuSkillWithCardIndex', 'useZhaoyunSkill',
-   'useSunquanSkill', 'useQiyuyangSkill', 'useZhangfeiSkill'].forEach(function (fn) {
+  ['useQiyuyangSkill'].forEach(function (fn) {
     const orig = window[fn];
     if (typeof orig !== 'function') return;
     window[fn] = function () {
